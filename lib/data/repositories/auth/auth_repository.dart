@@ -8,7 +8,6 @@ import 'package:toyland_mobile/data/models/user_models.dart';
 
 class AuthRepository {
   final ApiService _api = Get.find();
-
   Future<UserModel> login(String email, String password) async {
     final response = await _api.post(
       Endpoints.login,

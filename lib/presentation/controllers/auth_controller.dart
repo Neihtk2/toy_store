@@ -16,11 +16,9 @@ final RxBool isPasswordHidden = false.obs;
       isLoading.value = true;
       final UserModel result = await _repo.login(email, password);
       user.value = result;
-      
       // Lưu token
       final prefs = Get.find<SharedPreferences>();
       await prefs.setString('auth_token', result.token!);
-      
       Get.offAllNamed(RouterName.home); // Chuyển màn hình
     } catch (e) {
       error.value = e.toString();

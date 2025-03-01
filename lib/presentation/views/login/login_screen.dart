@@ -161,7 +161,6 @@ class LoginScreen extends GetView<AuthController> {
         ),
         height: 50.h,
         width: double.infinity,
-        
               child: controller.isLoading.value
                   ? const CircularProgressIndicator()
                   :  Center(child: Text('ĐĂNG NHẬP',style: TextStyle(fontSize: 20.sp,fontWeight: FontWeight.w700,color: Colors.white),)),
