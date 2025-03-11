@@ -14,7 +14,7 @@ class LoginScreen extends GetView<AuthController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.blue[50],
+      backgroundColor: Colors.grey[50],
       body: Container(
         // color: Colors.white70,
         margin: EdgeInsets.symmetric(horizontal: 35.r),

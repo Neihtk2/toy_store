@@ -2,11 +2,13 @@
 class UserModel {
   final String id;
   final String email;
+  final String phone;
   final String? token; // Thêm token
 
   UserModel({
     required this.id,
     required this.email,
+    required this.phone,
     this.token,
   });
 
@@ -14,6 +16,7 @@ class UserModel {
     return UserModel(
       id: json['id'],
       email: json['email'],
+      phone: json['phone'],
       token: json['token'],
     );
   }
