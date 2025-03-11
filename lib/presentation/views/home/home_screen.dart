@@ -1,10 +1,64 @@
 import 'package:flutter/material.dart';
+import 'package:curved_navigation_bar/curved_navigation_bar.dart';
+import 'package:toyland_mobile/presentation/views/home/home_iteam.dart';
+import 'package:toyland_mobile/presentation/views/profile/profile.dart';
 
-class HomeScreen extends StatelessWidget {
-  const HomeScreen({super.key});
+class HomeScreen extends StatefulWidget {
+  @override
+  _HomeScreenState createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  int _selectedIndex = 0;
+
+  final List<Widget> _pages = [
+    HomeItem(),
+    Center(child: Text("Fav", style: TextStyle(fontSize: 24))),
+   ProfileScreen(),
+  ];
 
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    return Scaffold(
+      
+      backgroundColor: Color(0xFFF8F9FA), // Để thấy rõ Bottom Bar
+      body: _pages[_selectedIndex],
+      bottomNavigationBar: CurvedNavigationBar(
+        backgroundColor: Color(0xFFF8F9FA)!,
+        color: Colors.white, // Màu của thanh navigation bar
+        buttonBackgroundColor: Colors.blue, // Màu nền của nút được chọn
+        height: 60,
+        animationDuration: Duration(milliseconds: 300),
+        index: _selectedIndex,
+        items: <Widget>[
+          Icon(
+            Icons.home_outlined,
+            size: 30,
+            color:
+                _selectedIndex == 0
+                    ? Colors.white
+                    : Colors.grey, // Trắng khi chọn, xám khi chưa chọn
+          ),
+
+          
+          Icon(
+            Icons.shopping_bag_outlined,
+            size: 30,
+            color: _selectedIndex == 1 ? Colors.white : Colors.grey,
+          ),
+          
+          Icon(
+            Icons.person_outline,
+            size: 30,
+            color: _selectedIndex == 2 ? Colors.white : Colors.grey,
+          ),
+        ],
+        onTap: (index) {
+          setState(() {
+            _selectedIndex = index;
+          });
+        },
+      ),
+    );
   }
 }
