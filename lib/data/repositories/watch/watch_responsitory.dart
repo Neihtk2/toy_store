@@ -1,0 +1,96 @@
+import 'package:toyland_mobile/data/models/watch_model.dart';
+
+class WatchModel {
+  List<String> searchHistory = [
+    'Đồng hồ Rolex',
+    'Đồng hồ thông minh',
+    'Đồng hồ Casio',
+    'Đồng hồ Citizen',
+    'Đồng hồ nữ',
+  ];
+
+  List<String> popularSearches = [
+    'Đồng hồ nam cao cấp',
+    'Đồng hồ chống nước',
+    'Đồng hồ thể thao',
+    'Đồng hồ đôi',
+    'Đồng hồ Seiko',
+    'Đồng hồ Apple Watch',
+    'Đồng hồ limited edition',
+  ];
+  // Danh sách đồng hồ từ API
+  List<Watch> watches = [
+    Watch(
+      id: 1,
+      name: 'Rolex Submariner',
+      brand: 'Rolex',
+      price: 28000000,
+      imageUrl: 'rolex_submariner.jpg',
+      rating: 4.9,
+      soldCount: 125,
+      isFavorite: true,
+      origin: 'Thụy Sĩ',
+      discountPercent: 10,
+    ),
+    Watch(
+      id: 2,
+      name: 'Casio G-Shock',
+      brand: 'Casio',
+      price: 3500000,
+      imageUrl: 'casio_gshock.jpg',
+      rating: 4.7,
+      soldCount: 328,
+      isFavorite: false,
+      origin: 'Nhật Bản',
+      discountPercent: 15,
+    ),
+    Watch(
+      id: 3,
+      name: 'Apple Watch Series 7',
+      brand: 'Apple',
+      price: 12000000,
+      imageUrl: 'apple_watch.jpg',
+      rating: 4.8,
+      soldCount: 427,
+      isFavorite: true,
+      origin: 'Mỹ',
+      discountPercent: 5,
+    ),
+    Watch(
+      id: 4,
+      name: 'Seiko Automatic',
+      brand: 'Seiko',
+      price: 6500000,
+      imageUrl: 'seiko_automatic.jpg',
+      rating: 4.6,
+      soldCount: 215,
+      isFavorite: false,
+      origin: 'Nhật Bản',
+      discountPercent: 12,
+    ),
+    Watch(
+      id: 5,
+      name: 'Citizen Eco-Drive',
+      brand: 'Citizen',
+      price: 7200000,
+      imageUrl: 'citizen_ecodrive.jpg',
+      rating: 4.5,
+      soldCount: 186,
+      isFavorite: true,
+      origin: 'Nhật Bản',
+      discountPercent: 8,
+    ),
+    Watch(
+      id: 6,
+      name: 'Omega Seamaster',
+      brand: 'Omega',
+      price: 18500000,
+      imageUrl: 'omega_seamaster.jpg',
+      rating: 4.8,
+      soldCount: 109,
+      isFavorite: true,
+      origin: 'Thụy Sĩ',
+      discountPercent: 7,
+    ),
+  ];
+}

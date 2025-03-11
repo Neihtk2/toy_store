@@ -8,14 +8,13 @@ import 'package:toyland_mobile/data/repositories/auth/auth_repository.dart';
 import 'package:toyland_mobile/routes/pages.dart';
 import 'package:toyland_mobile/routes/router_name.dart';
 
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
+
   // Khởi tạo dependencies
   await Get.putAsync(() => SharedPreferences.getInstance());
   await Get.putAsync(() => ApiService().init());
-Get.lazyPut(()=>AuthRepository());
+  Get.lazyPut(() => AuthRepository());
   runApp(MyApp());
 }
 
@@ -25,12 +24,13 @@ class MyApp extends StatelessWidget {
     return ScreenUtilInit(
       designSize: const Size(375, 812),
       useInheritedMediaQuery: true,
-       builder: (BuildContext context, Widget? child){return GetMaterialApp(
-        debugShowCheckedModeBanner: false,
-        initialRoute: RouterName.login,
-        getPages: Pages.pages,
-      );}
-      
+      builder: (BuildContext context, Widget? child) {
+        return GetMaterialApp(
+          debugShowCheckedModeBanner: false,
+          initialRoute: RouterName.search,
+          getPages: Pages.pages,
+        );
+      },
     );
   }
 }
