@@ -1,53 +1,93 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
+import 'package:toyland_mobile/data/models/watch_model.dart';
+import 'package:toyland_mobile/data/repositories/watch/watch_responsitory.dart';
 import 'package:toyland_mobile/presentation/views/home/drawer_menu.dart';
 import 'package:toyland_mobile/presentation/views/home/toy_item.dart';
 import 'package:toyland_mobile/presentation/views/home/toylist.dart';
 import 'package:toyland_mobile/presentation/views/search/search_screen.dart';
 import 'package:toyland_mobile/presentation/views/toys/toys_detail.dart';
+import 'package:toyland_mobile/routes/router_name.dart';
 
 class HomeItem extends StatelessWidget {
   HomeItem({super.key});
 
-  final List<Map<String, dynamic>> toys = [
-    {
-      'name': 'Nike Jordan',
-      'price': '\$493.00',
-      'image':
-          'https://www.manhattantoy.com/cdn/shop/products/Untitled-1.jpg?v=1673024231&width=1000',
-    },
-    {
-      'name': 'Nike Air Max',
-      'price': '\$897.99',
-      'image':
-          'https://www.manhattantoy.com/cdn/shop/products/Untitled-1.jpg?v=1673024231&width=1000',
-    },
-    {
-      'name': 'Nike Jordan',
-      'price': '\$493.00',
-      'image':
-          'https://www.manhattantoy.com/cdn/shop/products/Untitled-1.jpg?v=1673024231&width=1000',
-    },
-    {
-      'name': 'Nike Air Max',
-      'price': '\$897.99',
-      'image':
-          'https://www.manhattantoy.com/cdn/shop/products/Untitled-1.jpg?v=1673024231&width=1000',
-    },
-    {
-      'name': 'Nike Jordan',
-      'price': '\$493.00',
-      'image':
-          'https://www.manhattantoy.com/cdn/shop/products/Untitled-1.jpg?v=1673024231&width=1000',
-    },
-    {
-      'name': 'Nike Air Max',
-      'price': '\$897.99',
-      'image':
-          'https://www.manhattantoy.com/cdn/shop/products/Untitled-1.jpg?v=1673024231&width=1000',
-    },
+  List<Watch> watches = [
+    Watch(
+      id: 1,
+      name: 'Rolex Submariner',
+      brand: 'Rolex',
+      price: 28000000,
+      imageUrl: 'https://www.manhattantoy.com/cdn/shop/products/Untitled-1.jpg?v=1673024231&width=1000',
+      rating: 4.9,
+      soldCount: 125,
+      isFavorite: true,
+      origin: 'Thụy Sĩ',
+      discountPercent: 10,
+    ),
+    Watch(
+      id: 2,
+      name: 'Casio G-Shock',
+      brand: 'Casio',
+      price: 3500000,
+      imageUrl: 'https://www.manhattantoy.com/cdn/shop/products/Untitled-1.jpg?v=1673024231&width=1000',
+      rating: 4.7,
+      soldCount: 328,
+      isFavorite: false,
+      origin: 'Nhật Bản',
+      discountPercent: 15,
+    ),
+    Watch(
+      id: 3,
+      name: 'Apple Watch Series 7',
+      brand: 'Apple',
+      price: 12000000,
+      imageUrl: 'https://www.manhattantoy.com/cdn/shop/products/Untitled-1.jpg?v=1673024231&width=1000',
+      rating: 4.8,
+      soldCount: 427,
+      isFavorite: true,
+      origin: 'Mỹ',
+      discountPercent: 5,
+    ),
+    Watch(
+      id: 4,
+      name: 'Seiko Automatic',
+      brand: 'Seiko',
+      price: 6500000,
+      imageUrl: 'https://www.manhattantoy.com/cdn/shop/products/Untitled-1.jpg?v=1673024231&width=1000',
+      rating: 4.6,
+      soldCount: 215,
+      isFavorite: false,
+      origin: 'Nhật Bản',
+      discountPercent: 12,
+    ),
+    Watch(
+      id: 5,
+      name: 'Citizen Eco-Drive',
+      brand: 'Citizen',
+      price: 7200000,
+      imageUrl: 'https://www.manhattantoy.com/cdn/shop/products/Untitled-1.jpg?v=1673024231&width=1000',
+      rating: 4.5,
+      soldCount: 186,
+      isFavorite: true,
+      origin: 'Nhật Bản',
+      discountPercent: 8,
+    ),
+    Watch(
+      id: 6,
+      name: 'Omega Seamaster',
+      brand: 'Omega',
+      price: 18500000,
+      imageUrl: 'https://www.manhattantoy.com/cdn/shop/products/Untitled-1.jpg?v=1673024231&width=1000',
+      rating: 4.8,
+      soldCount: 109,
+      isFavorite: true,
+      origin: 'Thụy Sĩ',
+      discountPercent: 7,
+    ),
   ];
+
 
   @override
   Widget build(BuildContext context) {
@@ -69,6 +109,7 @@ class HomeItem extends StatelessWidget {
                 MaterialPageRoute(builder: (_) => PopularToysScreen()),
               );
             }),
+            const SizedBox(height: 10),
             _buildSection("New Toys", _buildVerticalList(), () {
               Navigator.push(
                 context,
@@ -103,18 +144,23 @@ class HomeItem extends StatelessWidget {
       centerTitle: true,
 
       actions: [
-        Stack(
-          children: const [
-            CircleAvatar(
-              backgroundColor: Colors.white,
-              child: Icon(
-                Icons.shopping_bag_outlined,
-                size: 26,
-                color: Colors.black,
+        GestureDetector(
+          onTap: () {
+            Get.toNamed(RouterName.cart);
+          },
+          child: Stack(
+            children: const [
+              CircleAvatar(
+                backgroundColor: Colors.white,
+                child: Icon(
+                  Icons.shopping_bag_outlined,
+                  size: 26,
+                  color: Colors.black,
+                ),
               ),
-            ),
-            Positioned(top: 5, right: 5, child: _NotificationDot()),
-          ],
+              Positioned(top: 5, right: 5, child: _NotificationDot()),
+            ],
+          ),
         ),
         const SizedBox(width: 15),
       ],
@@ -143,7 +189,7 @@ class HomeItem extends StatelessWidget {
             Icon(Icons.search, color: Colors.grey),
             SizedBox(width: 10),
             Text(
-              "Looking for shoes",
+              "Looking for toys",
               style: TextStyle(color: Colors.grey, fontSize: 16),
             ),
           ],
@@ -175,7 +221,7 @@ class HomeItem extends StatelessWidget {
           children: [
             Text(
               title,
-              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             GestureDetector(
               onTap: onSeeAll,
@@ -201,13 +247,13 @@ class HomeItem extends StatelessWidget {
       height: 250,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
-        itemCount: toys.length,
+        itemCount: watches.length,
         itemBuilder: (context, index) {
           return GestureDetector(
             onTap: () {
               Get.to(() => ToyDetailScreen());
             },
-            child: ShoeCard(shoe: toys[index]),
+            child: WatchCard(watch: watches[index]),
           );
         },
       ),
@@ -218,8 +264,8 @@ class HomeItem extends StatelessWidget {
     return ListView.builder(
       physics: const NeverScrollableScrollPhysics(),
       shrinkWrap: true,
-      itemCount: toys.length,
-      itemBuilder: (context, index) => ToyCard(product: toys[index]),
+      itemCount: watches.length,
+      itemBuilder: (context, index) => ToyCard(product: watches[index]),
     );
   }
 }
