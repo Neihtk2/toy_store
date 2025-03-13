@@ -1,20 +1,28 @@
-// lib/data/models/user_model.dart
 class UserModel {
-  final String id;
+  final int id;
   final String email;
-  final String? token; // Thêm token
+  final String username;
+  final int? role;
+  final String? accessToken;
+  final String? refreshToken;
 
   UserModel({
     required this.id,
     required this.email,
-    this.token,
+    required this.username,
+    this.role,
+    this.accessToken,
+    this.refreshToken,
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
     return UserModel(
-      id: json['id'],
-      email: json['email'],
-      token: json['token'],
+      id: json['user']['id'],
+      email: json['user']['email'],
+      username: json['user']['username'],
+      role: json['user']['role'],
+      accessToken: json['accessToken'],
+      refreshToken: json['refreshToken'],
     );
   }
 }
