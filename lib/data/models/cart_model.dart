@@ -1,3 +1,4 @@
+
 class CartItem {
   final int orderId;
   final int productId;
@@ -25,4 +26,5 @@ class CartItem {
       imageUrl: json['images'][0]['url'],
     );
   }
+
 }

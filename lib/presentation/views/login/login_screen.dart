@@ -13,64 +13,79 @@ class LoginScreen extends GetView<AuthController> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.grey[50],
-      body: Container(
-        // color: Colors.white70,
-        margin: EdgeInsets.symmetric(horizontal: 35.r),
+      backgroundColor: Colors.white,
+      body: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 24.w),
         child: SingleChildScrollView(
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              SizedBox(height: 60.h),
-              Center(
-                child: Text(
-                  'Chào mừng trở lại!',
-                  style: TextStyle(
-                    fontSize: 28.sp,
-                    fontWeight: FontWeight.bold,
-                    fontFamily: AppThemes.Roboto,
-                  ),
-                ),
-              ),
-              SizedBox(height: 30.h),
-              Center(child: _buildSignUpOptions()),
-              SizedBox(height: 30.h),
-              Center(
-                child: Text(
-                  'ĐĂNG NHẬP',
-                  style: TextStyle(
-                    fontSize: 28.sp,
-                    fontWeight: FontWeight.bold,
-                    fontFamily: AppThemes.Roboto,
-                  ),
-                ),
-              ),
-              SizedBox(height: 30.h),
+              SizedBox(height: 90.h),
               Text(
-                'Email',
+                'Hello Again!',
                 style: TextStyle(
-                  fontSize: 18.sp,
+                  fontSize: 26.sp,
                   fontWeight: FontWeight.bold,
                   fontFamily: AppThemes.Roboto,
                 ),
               ),
               SizedBox(height: 20.h),
-              _buildEmailField(),
-              SizedBox(height: 20.h),
               Text(
-                'Mật khẩu*',
+                "Welcome Back You've Been Missed!",
                 style: TextStyle(
-                  fontSize: 18.sp,
-                  fontWeight: FontWeight.bold,
+                  fontSize: 16.sp,
+                  color: Colors.grey,
                   fontFamily: AppThemes.Roboto,
                 ),
               ),
-              SizedBox(height: 20.h),
+              SizedBox(height: 40.h),
+              _buildTextField('Email Address', _emailController),
+              SizedBox(height: 30.h),
+              Row(
+                children: [
+                  Text(
+                    "Password",
+                    style: TextStyle(
+                      fontSize: 17.sp,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  Text(
+                    " *",
+                    style: TextStyle(color: Colors.red, fontSize: 18.sp),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 5),
               _buildPasswordField(),
-              SizedBox(height: 30.h),
-              _buildLoginButton(),
+              Align(
+                alignment: Alignment.centerRight,
+                child: TextButton(
+                  onPressed: () => Get.toNamed(RouterName.forgotpass),
+                  child: Text(
+                    'Recovery Password',
+                    style: TextStyle(color: Colors.grey[600]),
+                  ),
+                ),
+              ),
               SizedBox(height: 20.h),
-              _buildFooter(),
+              _buildLoginButton(),
+              SizedBox(height: 140.h),
+              RichText(
+                text: TextSpan(
+                  text: "Don't Have An Account? ",
+                  style: TextStyle(color: Colors.black87),
+                  children: [
+                    TextSpan(
+                      text: 'Sign Up For Free',
+                      style: TextStyle(color: Colors.blue),
+                      recognizer:
+                          TapGestureRecognizer()
+                            ..onTap = () => Get.toNamed(RouterName.signup),
+                    ),
+                  ],
+                ),
+              ),
             ],
           ),
         ),
@@ -78,93 +93,35 @@ class LoginScreen extends GetView<AuthController> {
     );
   }
 
-  Widget _buildSignUpOptions() {
+  Widget _buildTextField(String hint, TextEditingController controller) {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        RichText(
-          text: TextSpan(
-            text: 'Bạn chưa có tài khoản? ',
-            style: TextStyle(
-              color: Colors.black87,
-              fontWeight: FontWeight.w500,
-              fontSize: 16.sp,
-              fontFamily: AppThemes.Roboto,
-            ), // Màu mặc định cho văn bản
-            children: [
-              TextSpan(
-                text: 'Đăng ký ngay',
-                style: TextStyle(
-                  color: Colors.blue,
-                  fontWeight: FontWeight.w500,
-                  fontSize: 16.sp,
-                  fontFamily: AppThemes.Roboto,
-                ), // Màu nhấn cho Sign Up
-                recognizer:
-                    TapGestureRecognizer()
-                      ..onTap =
-                          () => Get.toNamed(
-                            RouterName.signup,
-                          ), // Xử lý khi ấn vào "Sign Up"
-              ),
-            ],
-          ),
+        Row(
+          children: [
+            Text(
+              hint,
+              style: TextStyle(fontSize: 17.sp, fontWeight: FontWeight.bold),
+            ),
+            Text(" *", style: TextStyle(color: Colors.red, fontSize: 18.sp)),
+          ],
         ),
-        SizedBox(height: 20.h),
-        RichText(
-          text: TextSpan(
-            text: 'Bạn chưa có tài khoản Face? ',
-            style: TextStyle(
-              color: Colors.black87,
-              fontWeight: FontWeight.w500,
-              fontSize: 16.sp,
-              fontFamily: AppThemes.Roboto,
-            ), // Màu mặc định cho văn bản
-            children: [
-              TextSpan(
-                text: 'Đăng ký Face',
-                style: TextStyle(
-                  color: Colors.blue,
-                  fontWeight: FontWeight.w500,
-                  fontSize: 16.sp,
-                  fontFamily: AppThemes.Roboto,
-                ), // Màu nhấn cho Sign Up
-                recognizer:
-                    TapGestureRecognizer()
-                      ..onTap =
-                          () => Get.toNamed(
-                            RouterName.signup,
-                          ), // Xử lý khi ấn vào "Sign Up"
-              ),
-            ],
+        const SizedBox(height: 5),
+        TextField(
+          controller: controller,
+
+          decoration: InputDecoration(
+            contentPadding: EdgeInsets.symmetric(vertical: 20.h, horizontal: 20.w),
+            filled: true,
+            fillColor: Colors.grey[100],
+            hintText: hint,
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(30.r),
+              borderSide: BorderSide.none,
+            ),
           ),
         ),
       ],
-    );
-  }
-
-  Widget _buildEmailField() {
-    return TextField(
-      controller: _emailController,
-      decoration: InputDecoration(
-        focusedBorder: OutlineInputBorder(
-          borderSide: Divider.createBorderSide(Get.context),
-        ),
-        enabledBorder: OutlineInputBorder(
-          borderSide: Divider.createBorderSide(Get.context),
-        ),
-        filled: true,
-        fillColor: Colors.white,
-        hintText: 'example@gmail.com',
-        hintStyle: TextStyle(
-          color: Colors.black26,
-          fontWeight: FontWeight.w600,
-          fontSize: 16.sp,
-          fontFamily: AppThemes.Roboto,
-        ),
-        border: OutlineInputBorder(
-          borderSide: Divider.createBorderSide(Get.context),
-        ),
-      ),
     );
   }
 
@@ -174,26 +131,14 @@ class LoginScreen extends GetView<AuthController> {
         controller: _passwordController,
         obscureText: controller.isPasswordHidden.value,
         decoration: InputDecoration(
-          focusedBorder: OutlineInputBorder(
-            borderSide: Divider.createBorderSide(Get.context),
-          ),
-          enabledBorder: OutlineInputBorder(
-            borderSide: Divider.createBorderSide(Get.context),
-          ),
           filled: true,
-          fillColor: Colors.white,
-          hintText: 'Nhập mật khẩu',
-          hintStyle: TextStyle(
-            color: Colors.black26,
-            fontWeight: FontWeight.w600,
-            fontSize: 16.sp,
-            fontFamily: AppThemes.Roboto,
-          ),
+          contentPadding: EdgeInsets.symmetric(vertical: 20.h, horizontal: 20.w),
+          fillColor: Colors.grey[100],
+          hintText: 'Password',
           border: OutlineInputBorder(
-            borderSide: Divider.createBorderSide(Get.context),
+            borderRadius: BorderRadius.circular(30.r),
+            borderSide: BorderSide.none,
           ),
-          errorText:
-              controller.error.isNotEmpty ? controller.error.value : null,
           suffixIcon: IconButton(
             icon: Icon(
               controller.isPasswordHidden.value
@@ -223,17 +168,17 @@ class LoginScreen extends GetView<AuthController> {
                 ),
         child: Container(
           decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10.r),
+            borderRadius: BorderRadius.circular(30.r),
             color: Colors.blueAccent,
           ),
-          height: 50.h,
+          height:70.h,
           width: double.infinity,
           child:
               controller.isLoading.value
-                  ? Center(child: const CircularProgressIndicator())
+                  ? const CircularProgressIndicator()
                   : Center(
                     child: Text(
-                      'ĐĂNG NHẬP',
+                      'Login',
                       style: TextStyle(
                         fontSize: 20.sp,
                         fontWeight: FontWeight.w700,
@@ -243,38 +188,6 @@ class LoginScreen extends GetView<AuthController> {
                   ),
         ),
       ),
-    );
-  }
-
-  Widget _buildFooter() {
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        InkWell(
-          onTap: () {},
-          child: Text(
-            'Đăng nhập Face',
-            style: TextStyle(
-              color: Colors.blue,
-              fontWeight: FontWeight.w500,
-              fontSize: 16.sp,
-              fontFamily: AppThemes.Roboto,
-            ),
-          ),
-        ),
-        InkWell(
-          onTap: () => Get.toNamed(RouterName.forgotpass),
-          child: Text(
-            'Quên mật khẩu ?',
-            style: TextStyle(
-              color: Colors.blue,
-              fontWeight: FontWeight.w500,
-              fontSize: 16.sp,
-              fontFamily: AppThemes.Roboto,
-            ),
-          ),
-        ),
-      ],
     );
   }
 }
