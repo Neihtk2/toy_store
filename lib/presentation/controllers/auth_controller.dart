@@ -24,6 +24,7 @@ class AuthController extends GetxController {
         final user = await _repo.login(email, password);
         if (user != null) {
           _saveTokens(user.accessToken, user.refreshToken);
+
           Get.toNamed(RouterName.home);
         } else {
           Get.snackbar('Error', 'Login failed');
@@ -36,12 +37,24 @@ class AuthController extends GetxController {
     }
   }
 
-  Future<void> register(String name, String email, String password) async {
+  Future<void> register(
+    String name,
+    String email,
+    String password,
+    String render,
+    String address,
+  ) async {
     isLoading.value = true;
     try {
       if (email.isNotEmpty || password.isNotEmpty) {
         // final response = await _apiService.LoginApp(username, password);
-        final user = await _repo.register(name, email, password);
+        final user = await _repo.register(
+          name,
+          email,
+          password,
+          render,
+          address,
+        );
         if (user != null) {
           _saveTokens(user.accessToken, user.refreshToken);
           Get.toNamed(RouterName.home);

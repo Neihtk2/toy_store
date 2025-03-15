@@ -1,6 +1,7 @@
 import 'package:get/get.dart';
 import 'package:toyland_mobile/presentation/views/cart/cart_binding.dart';
 import 'package:toyland_mobile/presentation/views/cart/cart_screen.dart';
+import 'package:toyland_mobile/presentation/views/checkout/checkout_binding.dart';
 import 'package:toyland_mobile/presentation/views/checkout/checkout_screen.dart';
 import 'package:toyland_mobile/presentation/views/forgotpass/forgotpass_binding.dart';
 import 'package:toyland_mobile/presentation/views/forgotpass/forgotpass_screen.dart';
@@ -37,7 +38,11 @@ class Pages {
       page: () => CartScreen(),
       binding: CartBinding(),
     ),
-    GetPage(name: RouterName.checkout, page: () => CheckoutScreen()),
+    GetPage(
+      name: RouterName.checkout,
+      page: () => CheckoutScreen(),
+      binding: CheckOutBinding(),
+    ),
     GetPage(name: RouterName.search, page: () => SearchScreen()),
   ];
 }

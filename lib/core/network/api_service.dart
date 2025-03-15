@@ -22,10 +22,18 @@ class ApiService extends Get.GetxService {
     String name,
     String email,
     String password,
+    String gender,
+    String address,
   ) async {
     return await dio.post(
       Endpoints.register,
-      data: {'username': name, 'email': email, 'password': password},
+      data: {
+        'username': name,
+        'email': email,
+        'password': password,
+        'gender': gender,
+        'address': address,
+      },
     );
   }
 

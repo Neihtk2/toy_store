@@ -8,6 +8,8 @@ class SignupScreen extends GetView<AuthController> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _anddressController = TextEditingController();
+  final TextEditingController _genderController = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -155,6 +157,8 @@ class SignupScreen extends GetView<AuthController> {
                   _nameController.text.trim(),
                   _emailController.text.trim(),
                   _passwordController.text.trim(),
+                  _anddressController.text.trim(),
+                  _genderController.text.trim(),
                 ),
         child: Container(
           decoration: BoxDecoration(

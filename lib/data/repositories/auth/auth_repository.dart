@@ -21,9 +21,17 @@ class AuthRepository {
     String username,
     String email,
     String password,
+    String gender,
+    String address,
   ) async {
     try {
-      final response = await _api.registerApp(username, email, password);
+      final response = await _api.registerApp(
+        username,
+        email,
+        password,
+        gender,
+        address,
+      );
       if (response.statusCode == 200 || response.statusCode == 201) {
         return UserModel.fromJson(response.data['data']);
       } else {

@@ -1,7 +1,6 @@
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:toyland_mobile/core/constants/config.dart';
-import 'package:toyland_mobile/core/network/api_service.dart';
 import 'package:toyland_mobile/data/models/cart_model.dart';
 import 'package:toyland_mobile/data/repositories/cart/cart_repository.dart';
 
@@ -10,24 +9,31 @@ class CartController extends GetxController {
   final RxBool isLoading = false.obs;
   final RxString error = ''.obs;
   var filteredCartItem = <CartItem>[].obs;
-  String token = GetStorage().read(MyConfig.ACCESS_TOKEN);
+
   @override
-  onInit() {
+  void onInit() {
     super.onInit();
     getCart();
   }
 
   Future<void> getCart() async {
-    if (token.isEmpty) {
+    isLoading.value = true;
+
+    String? token = GetStorage().read(MyConfig.ACCESS_TOKEN);
+    if (token == null || token.isEmpty) {
       error.value = "Bạn chưa đăng nhập!";
+      isLoading.value = false;
       return;
     }
+
     try {
-      isLoading(true);
       var fetchedCartData = await _repo.getCartItems(token);
       filteredCartItem.assignAll(fetchedCartData);
+      error.value = '';
+    } catch (e) {
+      error.value = "Lỗi khi tải giỏ hàng: $e";
     } finally {
-      isLoading(false);
+      isLoading.value = false;
     }
   }
 }
