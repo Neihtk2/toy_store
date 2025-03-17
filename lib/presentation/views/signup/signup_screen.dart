@@ -8,6 +8,8 @@ class SignupScreen extends GetView<AuthController> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _addressController = TextEditingController();
+  RxString selectedGender = 'Male'.obs;
 
   @override
   Widget build(BuildContext context) {
@@ -15,13 +17,12 @@ class SignupScreen extends GetView<AuthController> {
       appBar: AppBar(backgroundColor: Colors.white),
       backgroundColor: Colors.white,
       body: Container(
-        // color: Colors.white70,
         margin: EdgeInsets.symmetric(horizontal: 35.r),
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              SizedBox(height: 40.h),
+              SizedBox(height: 10.h),
               Text(
                 'Create Account',
                 style: TextStyle(
@@ -30,7 +31,7 @@ class SignupScreen extends GetView<AuthController> {
                   fontFamily: AppThemes.Roboto,
                 ),
               ),
-              SizedBox(height: 20.h),
+              SizedBox(height: 10.h),
               Text(
                 "Let's Create Account Together",
                 style: TextStyle(
@@ -39,24 +40,56 @@ class SignupScreen extends GetView<AuthController> {
                   fontFamily: AppThemes.Roboto,
                 ),
               ),
-              SizedBox(height: 30.h),
-              SizedBox(height: 30.h),
+              SizedBox(height: 10.h),
               _buildTextField("Your name"),
               _buildNameField(),
-              SizedBox(height: 30.h),
+              SizedBox(height: 10.h),
               _buildTextField("Email"),
-
               _buildEmailField(),
-              SizedBox(height: 30.h),
+              SizedBox(height: 10.h),
               _buildTextField("Password"),
-
               _buildPasswordField(),
-              SizedBox(height: 30.h),
+              SizedBox(height: 10.h),
+              _buildTextField("Address"),
+              _buildAddressField(),
+              SizedBox(height: 10.h),
+              _buildTextField("Gender"),
+              _buildGenderSelection(),
+              SizedBox(height: 20.h),
               _buildSignUpButton(),
             ],
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildGenderSelection() {
+    return Obx(
+      () => Row(
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          _buildRadioButton("Male"),
+          SizedBox(width: 10),
+          _buildRadioButton("Female"),
+          SizedBox(width: 10),
+          _buildRadioButton("Other"),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildRadioButton(String gender) {
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Radio<String>(
+          value: gender,
+          groupValue: selectedGender.value,
+          onChanged: (value) => selectedGender.value = value!,
+        ),
+        Text(gender),
+      ],
     );
   }
 
@@ -81,7 +114,6 @@ class SignupScreen extends GetView<AuthController> {
   Widget _buildEmailField() {
     return TextField(
       controller: _emailController,
-      obscureText: true,
       decoration: InputDecoration(
         filled: true,
         contentPadding: EdgeInsets.symmetric(vertical: 20.h, horizontal: 20.w),
@@ -95,10 +127,25 @@ class SignupScreen extends GetView<AuthController> {
     );
   }
 
+  Widget _buildAddressField() {
+    return TextField(
+      controller: _addressController,
+      decoration: InputDecoration(
+        filled: true,
+        contentPadding: EdgeInsets.symmetric(vertical: 20.h, horizontal: 20.w),
+        fillColor: Colors.grey[100],
+        hintText: 'Address',
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(30.r),
+          borderSide: BorderSide.none,
+        ),
+      ),
+    );
+  }
+
   Widget _buildNameField() {
     return TextField(
       controller: _nameController,
-      obscureText: true,
       decoration: InputDecoration(
         filled: true,
         contentPadding: EdgeInsets.symmetric(vertical: 20.h, horizontal: 20.w),
@@ -148,34 +195,34 @@ class SignupScreen extends GetView<AuthController> {
   Widget _buildSignUpButton() {
     return Obx(
       () => InkWell(
-        onTap:
-            controller.isLoading.value
-                ? null
-                : () => controller.register(
-                  _nameController.text.trim(),
-                  _emailController.text.trim(),
-                  _passwordController.text.trim(),
-                ),
+        onTap: controller.isLoading.value
+            ? null
+            : () => controller.register(
+                _nameController.text.trim(),
+                _emailController.text.trim(),
+                _passwordController.text.trim(),
+                _addressController.text.trim(),
+                selectedGender.value.trim(),
+              ),
         child: Container(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(30.r),
             color: Colors.blueAccent,
           ),
-          height: 70.h,
+          height: 60.h,
           width: double.infinity,
-          child:
-              controller.isLoading.value
-                  ? const CircularProgressIndicator()
-                  : Center(
-                    child: Text(
-                      'ĐĂNG KÝ',
-                      style: TextStyle(
-                        fontSize: 20.sp,
-                        fontWeight: FontWeight.w700,
-                        color: Colors.white,
-                      ),
+          child: controller.isLoading.value
+              ? const CircularProgressIndicator()
+              : Center(
+                  child: Text(
+                    'ĐĂNG KÝ',
+                    style: TextStyle(
+                      fontSize: 20.sp,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.white,
                     ),
                   ),
+                ),
         ),
       ),
     );

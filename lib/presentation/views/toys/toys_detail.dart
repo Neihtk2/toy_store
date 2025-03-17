@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
 
 class ToyDetailScreen extends StatefulWidget {
   @override
@@ -23,7 +25,9 @@ class _ToyDetailScreenState extends State<ToyDetailScreen> {
         elevation: 0,
         leading: IconButton(
           icon: Icon(Icons.arrow_back_ios, color: Colors.black),
-          onPressed: () {},
+          onPressed: () {
+            Get.back();
+          },
         ),
         title: Text(
           "Toy Store",

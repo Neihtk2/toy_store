@@ -22,10 +22,18 @@ class ApiService extends Get.GetxService {
     String name,
     String email,
     String password,
+    String gender,
+    String address,
   ) async {
     return await dio.post(
       Endpoints.register,
-      data: {'username': name, 'email': email, 'password': password},
+      data: {
+        'username': name,
+        'email': email,
+        'password': password,
+        'gender': gender,
+        'address': address,
+      },
     );
   }
 
@@ -50,5 +58,15 @@ class ApiService extends Get.GetxService {
     //     getx.Get.offAllNamed(RouterName.login);
     //     throw Exception('Failed to load shoes');
     //   }
+  }
+Future<Response> getMe(String token) async {
+    return await dio.get(
+      Endpoints.getMe,
+      options: Options(
+        headers: {
+          'Authorization': 'Bearer $token', // Truyền token vào header
+        },
+      ),
+    );  
   }
 }
