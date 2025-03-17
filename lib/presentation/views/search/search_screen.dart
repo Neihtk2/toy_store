@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:toyland_mobile/data/models/watch_model.dart';
 import 'package:toyland_mobile/data/repositories/watch/watch_responsitory.dart';
+import 'package:toyland_mobile/presentation/views/cart/cart_screen.dart';
 import 'package:toyland_mobile/routes/router_name.dart';
+
 class SearchScreen extends StatefulWidget {
   @override
   _SearchScreenState createState() => _SearchScreenState();
@@ -49,6 +51,7 @@ class _SearchScreenState extends State<SearchScreen> {
     _searchController.dispose();
     super.dispose();
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -116,7 +119,7 @@ class _SearchScreenState extends State<SearchScreen> {
           IconButton(
             icon: Icon(Icons.shopping_cart),
             onPressed: () {
-              Get.toNamed(RouterName.cart);
+              Get.to(CartScreen());
             },
           ),
         ],
@@ -488,5 +491,5 @@ class SearchResultsScreen extends StatelessWidget {
           RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'),
           (Match m) => '${m[1]}.',
         );
-  }      
+  }
 }

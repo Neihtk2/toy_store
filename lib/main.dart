@@ -4,7 +4,6 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:toyland_mobile/core/network/api_service.dart';
-import 'package:toyland_mobile/presentation/controllers/user_controller.dart';
 import 'package:toyland_mobile/routes/pages.dart';
 import 'package:toyland_mobile/routes/router_name.dart';
 
@@ -24,7 +23,7 @@ class MyApp extends StatelessWidget {
       builder: (BuildContext context, Widget? child) {
         return GetMaterialApp(
           debugShowCheckedModeBanner: false,
-          initialRoute: RouterName.login,
+          initialRoute: RouterName.home,
           getPages: Pages.pages,
         );
       },

@@ -6,7 +6,7 @@ import 'package:toyland_mobile/data/models/user_models.dart';
 import 'package:toyland_mobile/data/repositories/auth/auth_repository.dart';
 
 class UserController extends GetxController {
-  final AuthRepository _repo = Get.find();
+  final AuthRepository _repo = AuthRepository();
   final Rx<MeModel?> user = Rx<MeModel?>(null);
   final RxBool isLoading = false.obs;
   final RxString error = ''.obs;

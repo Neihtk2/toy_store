@@ -15,7 +15,7 @@ class AuthController extends GetxController {
   final RxString error = ''.obs;
   final RxBool isPasswordHidden = false.obs;
   final box = GetStorage();
-  
+
   Future<void> login(String email, String password) async {
     isLoading.value = true;
     try {
@@ -26,7 +26,6 @@ class AuthController extends GetxController {
           print("ddd");
           print(user.accessToken);
           print("ddd");
-
           Get.toNamed(RouterName.home);
         } else {
           Get.snackbar('Error', 'Login failed');
@@ -38,7 +37,6 @@ class AuthController extends GetxController {
       isLoading.value = false;
     }
   }
-   
 
   Future<void> register(
     String name,
@@ -80,7 +78,6 @@ class AuthController extends GetxController {
   }
 
   Future<void> forgotpass(String email) async {}
-
 }
 
 void _handleError(dynamic e) {
@@ -90,4 +87,3 @@ void _handleError(dynamic e) {
           : e.toString();
   Get.snackbar('Error', message);
 }
-

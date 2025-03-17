@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:toyland_mobile/data/models/watch_model.dart';
 import 'package:toyland_mobile/data/repositories/watch/watch_responsitory.dart';
+import 'package:toyland_mobile/presentation/views/cart/cart_screen.dart';
 import 'package:toyland_mobile/presentation/views/home/drawer_menu.dart';
 import 'package:toyland_mobile/presentation/views/home/toy_item.dart';
 import 'package:toyland_mobile/presentation/views/home/toylist.dart';
@@ -19,7 +20,8 @@ class HomeItem extends StatelessWidget {
       name: 'Rolex Submariner',
       brand: 'Rolex',
       price: 28000000,
-      imageUrl: 'https://www.manhattantoy.com/cdn/shop/products/Untitled-1.jpg?v=1673024231&width=1000',
+      imageUrl:
+          'https://www.manhattantoy.com/cdn/shop/products/Untitled-1.jpg?v=1673024231&width=1000',
       rating: 4.9,
       soldCount: 125,
       isFavorite: true,
@@ -31,7 +33,8 @@ class HomeItem extends StatelessWidget {
       name: 'Casio G-Shock',
       brand: 'Casio',
       price: 3500000,
-      imageUrl: 'https://www.manhattantoy.com/cdn/shop/products/Untitled-1.jpg?v=1673024231&width=1000',
+      imageUrl:
+          'https://www.manhattantoy.com/cdn/shop/products/Untitled-1.jpg?v=1673024231&width=1000',
       rating: 4.7,
       soldCount: 328,
       isFavorite: false,
@@ -43,7 +46,8 @@ class HomeItem extends StatelessWidget {
       name: 'Apple Watch Series 7',
       brand: 'Apple',
       price: 12000000,
-      imageUrl: 'https://www.manhattantoy.com/cdn/shop/products/Untitled-1.jpg?v=1673024231&width=1000',
+      imageUrl:
+          'https://www.manhattantoy.com/cdn/shop/products/Untitled-1.jpg?v=1673024231&width=1000',
       rating: 4.8,
       soldCount: 427,
       isFavorite: true,
@@ -55,7 +59,8 @@ class HomeItem extends StatelessWidget {
       name: 'Seiko Automatic',
       brand: 'Seiko',
       price: 6500000,
-      imageUrl: 'https://www.manhattantoy.com/cdn/shop/products/Untitled-1.jpg?v=1673024231&width=1000',
+      imageUrl:
+          'https://www.manhattantoy.com/cdn/shop/products/Untitled-1.jpg?v=1673024231&width=1000',
       rating: 4.6,
       soldCount: 215,
       isFavorite: false,
@@ -67,7 +72,8 @@ class HomeItem extends StatelessWidget {
       name: 'Citizen Eco-Drive',
       brand: 'Citizen',
       price: 7200000,
-      imageUrl: 'https://www.manhattantoy.com/cdn/shop/products/Untitled-1.jpg?v=1673024231&width=1000',
+      imageUrl:
+          'https://www.manhattantoy.com/cdn/shop/products/Untitled-1.jpg?v=1673024231&width=1000',
       rating: 4.5,
       soldCount: 186,
       isFavorite: true,
@@ -79,7 +85,8 @@ class HomeItem extends StatelessWidget {
       name: 'Omega Seamaster',
       brand: 'Omega',
       price: 18500000,
-      imageUrl: 'https://www.manhattantoy.com/cdn/shop/products/Untitled-1.jpg?v=1673024231&width=1000',
+      imageUrl:
+          'https://www.manhattantoy.com/cdn/shop/products/Untitled-1.jpg?v=1673024231&width=1000',
       rating: 4.8,
       soldCount: 109,
       isFavorite: true,
@@ -87,7 +94,6 @@ class HomeItem extends StatelessWidget {
       discountPercent: 7,
     ),
   ];
-
 
   @override
   Widget build(BuildContext context) {
@@ -146,7 +152,8 @@ class HomeItem extends StatelessWidget {
       actions: [
         GestureDetector(
           onTap: () {
-            Get.toNamed(RouterName.cart);
+            Get.to(CartScreen());
+            // Get.toNamed(RouterName.cart);
           },
           child: Stack(
             children: const [
