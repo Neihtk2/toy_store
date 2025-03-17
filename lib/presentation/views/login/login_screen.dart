@@ -111,7 +111,10 @@ class LoginScreen extends GetView<AuthController> {
           controller: controller,
 
           decoration: InputDecoration(
-            contentPadding: EdgeInsets.symmetric(vertical: 20.h, horizontal: 20.w),
+            contentPadding: EdgeInsets.symmetric(
+              vertical: 20.h,
+              horizontal: 20.w,
+            ),
             filled: true,
             fillColor: Colors.grey[100],
             hintText: hint,
@@ -132,7 +135,10 @@ class LoginScreen extends GetView<AuthController> {
         obscureText: controller.isPasswordHidden.value,
         decoration: InputDecoration(
           filled: true,
-          contentPadding: EdgeInsets.symmetric(vertical: 20.h, horizontal: 20.w),
+          contentPadding: EdgeInsets.symmetric(
+            vertical: 20.h,
+            horizontal: 20.w,
+          ),
           fillColor: Colors.grey[100],
           hintText: 'Password',
           border: OutlineInputBorder(
@@ -171,11 +177,11 @@ class LoginScreen extends GetView<AuthController> {
             borderRadius: BorderRadius.circular(30.r),
             color: Colors.blueAccent,
           ),
-          height:70.h,
+          height: 70.h,
           width: double.infinity,
           child:
               controller.isLoading.value
-                  ? const CircularProgressIndicator()
+                  ? Center(child: const CircularProgressIndicator())
                   : Center(
                     child: Text(
                       'Login',

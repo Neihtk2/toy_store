@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'package:toyland_mobile/data/models/cart_model.dart';
 import 'package:toyland_mobile/presentation/controllers/cart_controller.dart';
 import 'package:toyland_mobile/routes/router_name.dart';
@@ -18,7 +19,7 @@ class _CartScreenState extends State<CartScreen> {
     0,
     (sum, item) => sum + (item.price * item.amount),
   );
-
+  double get delivery => 0;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -44,79 +45,91 @@ class _CartScreenState extends State<CartScreen> {
         centerTitle: true,
       ),
       body: Obx(() {
-        if (cartController.filteredCartItem.isEmpty) {
+        if (cartController.isLoading.value) {
+          return Center(child: CircularProgressIndicator());
+        }
+
+        if (!cartController.isLoading.value &&
+            cartController.filteredCartItem.isEmpty) {
           return Center(child: Text('Không có sản phẩm nào'));
-        } else {
-          return Column(
-            children: [
-              Expanded(
-                child: ListView.builder(
-                  itemCount: cartController.filteredCartItem.length,
-                  itemBuilder: (context, index) {
-                    final item = cartController.filteredCartItem[index];
-                    return CartItemWidget(
-                      item: item,
-                      onQuantityChanged: (newQuantity) {
-                        setState(() {
-                          item.amount = newQuantity;
-                        });
-                      },
-                      onRemove: () {
-                        setState(() {
-                          cartController.filteredCartItem.removeAt(index);
-                        });
-                      },
-                    );
-                  },
-                ),
+        }
+        return Column(
+          children: [
+            Expanded(
+              child: ListView.builder(
+                itemCount: cartController.filteredCartItem.length,
+                itemBuilder: (context, index) {
+                  final item = cartController.filteredCartItem[index];
+                  return CartItemWidget(
+                    item: item,
+                    onQuantityChanged: (newQuantity) {
+                      setState(() {
+                        item.amount = newQuantity;
+                      });
+                    },
+                    onRemove: () {
+                      setState(() {
+                        cartController.filteredCartItem.removeAt(index);
+                      });
+                    },
+                  );
+                },
               ),
-              Container(
-                height: MediaQuery.of(context).size.height * 0.35,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(25),
-                    topRight: Radius.circular(25),
-                  ),
-                  color: Colors.white,
+            ),
+            Container(
+              height: MediaQuery.of(context).size.height * 0.35,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.only(
+                  topLeft: Radius.circular(25),
+                  topRight: Radius.circular(25),
                 ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    OrderSummary(
-                      subtotal: subtotal,
-                      shipping: shipping,
-                      total: subtotal + shipping,
-                      delivery: 0,
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: ElevatedButton(
-                        onPressed: () {
-                          Get.toNamed(RouterName.checkout);
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: const Color(0xFF4795DE),
-                          minimumSize: const Size(double.infinity, 50),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(25),
-                          ),
+                color: Colors.white,
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.spaceAround,
+                children: [
+                  OrderSummary(
+                    subtotal: subtotal,
+                    shipping: shipping,
+                    total: subtotal + shipping,
+                    delivery: delivery,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.all(16),
+                    child: ElevatedButton(
+                      onPressed: () {
+                        Get.toNamed(
+                          RouterName.checkout,
+                          arguments: {
+                            'subtotal': subtotal,
+                            'shipping': shipping,
+                            'total': subtotal + shipping,
+                            'delivery': delivery,
+                          },
+                        );
+                      },
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFF4795DE),
+                        minimumSize: const Size(double.infinity, 50),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(25),
                         ),
-                        child: const Text(
-                          'Checkout',
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.w600,
-                            color: Colors.white,
-                          ),
+                      ),
+                      child: const Text(
+                        'Checkout',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.white,
                         ),
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-            ],
-          );
-        }
+            ),
+          ],
+        );
       }),
     );
   }
@@ -248,7 +261,7 @@ class CartItemWidget extends StatelessWidget {
               ),
               IconButton(
                 constraints: BoxConstraints(),
-                icon: const Icon(Icons.delete_outline, color: Colors.grey),
+                icon: const Icon(Icons.delete_outline, color: Colors.red),
                 style: IconButton.styleFrom(
                   tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                 ),
@@ -289,7 +302,7 @@ class OrderSummary extends StatelessWidget {
                 style: TextStyle(color: Colors.grey, fontSize: 16),
               ),
               Text(
-                '\$${subtotal.toStringAsFixed(2)}',
+                '\$${formartted(subtotal)}',
                 style: const TextStyle(
                   fontWeight: FontWeight.w600,
                   fontSize: 16,
@@ -306,7 +319,7 @@ class OrderSummary extends StatelessWidget {
                 style: TextStyle(color: Colors.grey, fontSize: 16),
               ),
               Text(
-                '\$${shipping.toStringAsFixed(2)}',
+                '\$${formartted(shipping)}',
                 style: const TextStyle(
                   fontWeight: FontWeight.w600,
                   fontSize: 16,
@@ -323,7 +336,7 @@ class OrderSummary extends StatelessWidget {
                 style: TextStyle(color: Colors.grey, fontSize: 16),
               ),
               Text(
-                '\$${delivery.toStringAsFixed(2)}',
+                '\$${formartted(delivery)}',
                 style: const TextStyle(
                   fontWeight: FontWeight.w600,
                   fontSize: 16,
@@ -344,7 +357,7 @@ class OrderSummary extends StatelessWidget {
                 ),
               ),
               Text(
-                '\$${total.toStringAsFixed(2)}',
+                '\$${formartted(total)}',
                 style: const TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 18,
@@ -357,4 +370,9 @@ class OrderSummary extends StatelessWidget {
       ),
     );
   }
+}
+
+String formartted(num number) {
+  String formattedPrice = NumberFormat("#,##0.00").format(number);
+  return formattedPrice;
 }

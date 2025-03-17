@@ -1,0 +1,12 @@
+import 'package:get/get.dart';
+import 'package:toyland_mobile/core/network/api_service.dart';
+import 'package:toyland_mobile/data/repositories/cart/cart_repository.dart';
+import 'package:toyland_mobile/presentation/controllers/cart_controller.dart';
+
+class CheckOutBinding extends Bindings {
+  @override
+  void dependencies() {
+    Get.lazyPut<CartController>(() => CartController());
+    Get.lazyPut<ApiService>(() => ApiService());
+  }
+}

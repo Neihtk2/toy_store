@@ -8,8 +8,10 @@ class SignupScreen extends GetView<AuthController> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _nameController = TextEditingController();
+
   final TextEditingController _addressController = TextEditingController();
   RxString selectedGender = 'Male'.obs;
+
 
   @override
   Widget build(BuildContext context) {
@@ -195,6 +197,7 @@ class SignupScreen extends GetView<AuthController> {
   Widget _buildSignUpButton() {
     return Obx(
       () => InkWell(
+
         onTap: controller.isLoading.value
             ? null
             : () => controller.register(
@@ -204,6 +207,7 @@ class SignupScreen extends GetView<AuthController> {
                 _addressController.text.trim(),
                 selectedGender.value.trim(),
               ),
+
         child: Container(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(30.r),
