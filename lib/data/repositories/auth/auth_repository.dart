@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
 import 'package:toyland_mobile/core/network/api_service.dart';
+import 'package:toyland_mobile/data/models/me_models.dart';
 import 'package:toyland_mobile/data/models/user_models.dart';
 
 class AuthRepository {
@@ -16,15 +17,22 @@ class AuthRepository {
       return null;
     }
   }
-  Future<UserModel?> getUser(String token) async {
+Future<MeModel?> getUser(String token) async {
   try {
     print("Gọi API lấy thông tin người dùng...");
     final response = await _api.getMe(token);
     print("Phản hồi API: ${response.statusCode} - ${response.data}");
 
     if (response.statusCode == 200 || response.statusCode == 201) {
-      print("Dữ liệu người dùng: ${response.data['data']}");
-      return UserModel.fromJson(response.data['data']);
+      var responseData = response.data;
+      
+      if (responseData == null || responseData['data'] == null) {
+        print("Lỗi: Dữ liệu trả về từ API bị null");
+        return null;
+      }
+
+      print("Dữ liệu người dùng: ${responseData['data']}");
+      return MeModel.fromJson(responseData['data']);
     } else {
       print("Lỗi: API trả về mã trạng thái ${response.statusCode}");
       return null;
@@ -34,6 +42,7 @@ class AuthRepository {
     return null;
   }
 }
+
 
 
   Future<UserModel?> register(

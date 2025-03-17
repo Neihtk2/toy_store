@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:toyland_mobile/presentation/controllers/auth_controller.dart';
+import 'package:toyland_mobile/presentation/controllers/user_controller.dart';
 import 'package:toyland_mobile/presentation/views/profile/edit_profile.dart';
 
 class ProfileScreen extends StatelessWidget {
-  const ProfileScreen({Key? key}) : super(key: key);
+  ProfileScreen({Key? key}) : super(key: key) {
+    Get.put(UserController()); // 🔥 Đăng ký tại đây (không tối ưu)
+  }
 
   @override
   Widget build(BuildContext context) {
-    final AuthController authController = Get.find();
-    
+    final UserController userController = Get.find();
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -34,14 +36,22 @@ class ProfileScreen extends StatelessWidget {
         ],
       ),
       body: Obx(() {
-        if (authController.isLoading.value) {
+        if (userController.isLoading.value) {
           return const Center(child: CircularProgressIndicator());
         }
 
-        final user = authController.user.value;
+        final user = userController.user.value;
         if (user == null) {
-          return const Center(child: Text("Không thể tải thông tin người dùng"));
+          return Center(
+            child: Text(
+              userController.error.isNotEmpty
+                  ? userController.error.value
+                  : "Không thể tải thông tin người dùng!",
+              style: const TextStyle(color: Colors.red, fontSize: 16),
+            ),
+          );
         }
+// Debug API
 
         return SingleChildScrollView(
           padding: const EdgeInsets.all(20),
@@ -51,9 +61,9 @@ class ProfileScreen extends StatelessWidget {
               Center(
                 child: Stack(
                   children: [
-                    CircleAvatar(
+                    const CircleAvatar(
                       radius: 50,
-                      child: Icon(Icons.person),
+                      child: Icon(Icons.person, size: 40),
                     ),
                     Positioned(
                       bottom: 0,
@@ -78,7 +88,7 @@ class ProfileScreen extends StatelessWidget {
 
               // Tên người dùng
               Text(
-                user.username ?? "Chưa có tên",
+                user.username?.isNotEmpty == true ? user.username! : "Chưa có tên",
                 style: const TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
@@ -88,9 +98,8 @@ class ProfileScreen extends StatelessWidget {
               const SizedBox(height: 20),
 
               // Các trường thông tin người dùng
-              _buildProfileField("Full Name", user.username ?? ""),
-              _buildProfileField("Email Address", user.email ?? ""),
-              _buildProfileField("Password", "********"),
+              _buildProfileField("Full Name", user.username ?? "Chưa có tên"),
+              _buildProfileField("Email Address", user.email ?? "Chưa có email"),
             ],
           ),
         );
