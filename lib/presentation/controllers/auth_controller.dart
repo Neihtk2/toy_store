@@ -1,17 +1,15 @@
 // lib/presentation/controllers/auth_controller.dart
 
+import 'package:dio/dio.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
-
 import 'package:toyland_mobile/core/constants/config.dart';
-import 'package:toyland_mobile/core/network/api_service.dart';
 import 'package:toyland_mobile/data/models/user_models.dart';
 import 'package:toyland_mobile/data/repositories/auth/auth_repository.dart';
 import 'package:toyland_mobile/routes/router_name.dart';
 
 class AuthController extends GetxController {
-  final AuthRepository _repo = Get.find();
-  final ApiService _apiService = ApiService();
+  final AuthRepository _repo = AuthRepository();
   final Rx<UserModel?> user = Rx<UserModel?>(null);
   final RxBool isLoading = false.obs;
   final RxString error = ''.obs;
@@ -24,14 +22,13 @@ class AuthController extends GetxController {
         final user = await _repo.login(email, password);
         if (user != null) {
           _saveTokens(user.accessToken, user.refreshToken);
-
           Get.toNamed(RouterName.home);
         } else {
           Get.snackbar('Error', 'Login failed');
         }
       }
     } catch (e) {
-      Get.snackbar('Error', e.toString());
+      _handleError(e);
     } finally {
       isLoading.value = false;
     }
@@ -63,7 +60,7 @@ class AuthController extends GetxController {
         }
       }
     } catch (e) {
-      Get.snackbar('Error', e.toString());
+      _handleError(e);
     } finally {
       isLoading.value = false;
     }
@@ -77,4 +74,12 @@ class AuthController extends GetxController {
   }
 
   Future<void> forgotpass(String email) async {}
+}
+
+void _handleError(dynamic e) {
+  final message =
+      e is DioException
+          ? e.response?.data['message'] ?? e.message
+          : e.toString();
+  Get.snackbar('Error', message);
 }

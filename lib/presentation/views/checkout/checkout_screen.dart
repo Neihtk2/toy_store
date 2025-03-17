@@ -377,26 +377,6 @@ class _CheckoutFormState extends State<CheckoutForm> {
                   ),
                 ),
               ),
-
-              // const SizedBox(height: 16),
-              // ElevatedButton(
-              //   onPressed: () {
-              //     // Xử lý khi nhấn nút Submit
-              //     if (_formKey.currentState!.validate()) {
-              //       _formKey.currentState!.save();
-
-              //       // In ra dữ liệu để kiểm tra
-              //       debugPrint('Name: $_name');
-              //       debugPrint('Phone: $_phoneNumber');
-              //       debugPrint('Address: $_address');
-              //       debugPrint('Delivery Method: $_deliveryMethod');
-              //       debugPrint('Payment Method: $_paymentMethod');
-
-              //       // Tại đây, bạn có thể gửi dữ liệu lên server, chuyển trang,...
-              //     }
-              //   },
-              //   child: const Text('Submit'),
-              // ),
             ],
           ),
         ),

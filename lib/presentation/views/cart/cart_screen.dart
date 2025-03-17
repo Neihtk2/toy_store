@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:intl/intl.dart';
 import 'package:toyland_mobile/data/models/cart_model.dart';
 import 'package:toyland_mobile/presentation/controllers/cart_controller.dart';
 import 'package:toyland_mobile/routes/router_name.dart';
@@ -260,7 +261,7 @@ class CartItemWidget extends StatelessWidget {
               ),
               IconButton(
                 constraints: BoxConstraints(),
-                icon: const Icon(Icons.delete_outline, color: Colors.grey),
+                icon: const Icon(Icons.delete_outline, color: Colors.red),
                 style: IconButton.styleFrom(
                   tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                 ),
@@ -301,7 +302,7 @@ class OrderSummary extends StatelessWidget {
                 style: TextStyle(color: Colors.grey, fontSize: 16),
               ),
               Text(
-                '\$${subtotal.toStringAsFixed(2)}',
+                '\$${formartted(subtotal)}',
                 style: const TextStyle(
                   fontWeight: FontWeight.w600,
                   fontSize: 16,
@@ -318,7 +319,7 @@ class OrderSummary extends StatelessWidget {
                 style: TextStyle(color: Colors.grey, fontSize: 16),
               ),
               Text(
-                '\$${shipping.toStringAsFixed(2)}',
+                '\$${formartted(shipping)}',
                 style: const TextStyle(
                   fontWeight: FontWeight.w600,
                   fontSize: 16,
@@ -335,7 +336,7 @@ class OrderSummary extends StatelessWidget {
                 style: TextStyle(color: Colors.grey, fontSize: 16),
               ),
               Text(
-                '\$${delivery.toStringAsFixed(2)}',
+                '\$${formartted(delivery)}',
                 style: const TextStyle(
                   fontWeight: FontWeight.w600,
                   fontSize: 16,
@@ -356,7 +357,7 @@ class OrderSummary extends StatelessWidget {
                 ),
               ),
               Text(
-                '\$${total.toStringAsFixed(2)}',
+                '\$${formartted(total)}',
                 style: const TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 18,
@@ -369,4 +370,9 @@ class OrderSummary extends StatelessWidget {
       ),
     );
   }
+}
+
+String formartted(num number) {
+  String formattedPrice = NumberFormat("#,##0.00").format(number);
+  return formattedPrice;
 }
