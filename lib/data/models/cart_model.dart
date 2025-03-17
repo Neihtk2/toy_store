@@ -25,4 +25,6 @@ class CartItem {
       imageUrl: json['images'][0]['url'],
     );
   }
+
 }
+

@@ -7,6 +7,8 @@ import 'package:toyland_mobile/presentation/views/forgotpass/forgotpass_binding.
 import 'package:toyland_mobile/presentation/views/forgotpass/forgotpass_screen.dart';
 import 'package:toyland_mobile/presentation/views/home/home_screen.dart';
 import 'package:toyland_mobile/presentation/views/login/login_bindings.dart';
+import 'package:toyland_mobile/presentation/views/profile/profile.dart';
+import 'package:toyland_mobile/presentation/views/profile/profile_bindings.dart';
 import 'package:toyland_mobile/presentation/views/search/search_screen.dart';
 import 'package:toyland_mobile/presentation/views/signup/signup_bindings.dart';
 import 'package:toyland_mobile/routes/router_name.dart';
@@ -44,5 +46,10 @@ class Pages {
       binding: CheckOutBinding(),
     ),
     GetPage(name: RouterName.search, page: () => SearchScreen()),
+    GetPage(
+      name: RouterName.profile,
+      page: () => ProfileScreen(),
+      binding: ProfileBindings(),
+    ),
   ];
 }

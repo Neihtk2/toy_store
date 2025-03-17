@@ -5,4 +5,5 @@ class Endpoints {
   static const String getProfile = '/api/v1/user/profile';
   static const String updateProfile = '/api/v1/user/profile';
   static const String getCart = '/api/v1/orders/my-cart';
+  static const String getMe = '/api/v1/auth/me';
 }

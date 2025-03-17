@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
 import 'package:toyland_mobile/presentation/views/home/home_iteam.dart';
+import 'package:toyland_mobile/presentation/views/order/order_screen.dart';
 import 'package:toyland_mobile/presentation/views/profile/profile.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -13,7 +14,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   final List<Widget> _pages = [
     HomeItem(),
-    Center(child: Text("Fav", style: TextStyle(fontSize: 24))),
+    OrderListScreen(),
    ProfileScreen(),
   ];
 
@@ -42,7 +43,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
           
           Icon(
-            Icons.shopping_bag_outlined,
+            Icons.local_shipping_outlined,
             size: 30,
             color: _selectedIndex == 1 ? Colors.white : Colors.grey,
           ),

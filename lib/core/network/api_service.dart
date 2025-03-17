@@ -59,4 +59,14 @@ class ApiService extends Get.GetxService {
     //     throw Exception('Failed to load shoes');
     //   }
   }
+Future<Response> getMe(String token) async {
+    return await dio.get(
+      Endpoints.getMe,
+      options: Options(
+        headers: {
+          'Authorization': 'Bearer $token', // Truyền token vào header
+        },
+      ),
+    );  
+  }
 }
