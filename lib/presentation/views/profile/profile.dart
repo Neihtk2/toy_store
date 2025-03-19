@@ -5,7 +5,7 @@ import 'package:toyland_mobile/presentation/views/profile/edit_profile.dart';
 
 class ProfileScreen extends StatelessWidget {
   ProfileScreen({Key? key}) : super(key: key) {
-    Get.put(UserController()); // 🔥 Đăng ký tại đây (không tối ưu)
+     Get.put(UserController()); // 🔥 Đăng ký tại đây (không tối ưu)
   }
 
   @override
@@ -15,14 +15,14 @@ class ProfileScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
+        automaticallyImplyLeading: false, 
         backgroundColor: Colors.white,
         elevation: 0,
-        centerTitle: true,
+        centerTitle: false,
         title: const Text(
           "Profile",
           style: TextStyle(
             color: Colors.black,
-            fontSize: 18,
             fontWeight: FontWeight.bold,
           ),
         ),

@@ -14,7 +14,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   final List<Widget> _pages = [
     HomeItem(),
-    OrderListScreen(),
+    OrderScreen(),
    ProfileScreen(),
   ];
 

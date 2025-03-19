@@ -18,6 +18,22 @@ class ApiService extends Get.GetxService {
     );
   }
 
+  Future<Response> addProduct(String id, String amount,String token) async {
+    return await dio.post(
+      Endpoints.addProducts,
+      data: {
+        "products": [
+          {"id": id, "amount": amount},
+        ],
+      },
+      options: Options(
+        headers: {
+          'Authorization': 'Bearer $token', // Truyền token vào header
+        },
+      ),
+    );
+  }
+
   Future<Response> registerApp(
     String name,
     String email,
@@ -46,6 +62,8 @@ class ApiService extends Get.GetxService {
         },
       ),
     );
+    
+
     //   if (response.statusCode == 200) {
     //     return CartItemData.fromJson(response.data);
     //   } else {
@@ -59,7 +77,8 @@ class ApiService extends Get.GetxService {
     //     throw Exception('Failed to load shoes');
     //   }
   }
-Future<Response> getMe(String token) async {
+
+  Future<Response> getMe(String token) async {
     return await dio.get(
       Endpoints.getMe,
       options: Options(
@@ -67,6 +86,28 @@ Future<Response> getMe(String token) async {
           'Authorization': 'Bearer $token', // Truyền token vào header
         },
       ),
-    );  
+    );
+  }
+   Future<Response> getOrder(String token) async {
+    return await dio.get(
+      Endpoints.getOrder,
+      options: Options(
+        headers: {
+          'Authorization': 'Bearer $token', // Truyền token vào header
+        },
+      ),
+    );
+  }
+  
+
+  Future<Response> getProducts(String token) async {
+    return await dio.get(
+      Endpoints.getProducts,
+      options: Options(
+        headers: {
+          'Authorization': 'Bearer $token', // Truyền token vào header
+        },
+      ),
+    );
   }
 }
