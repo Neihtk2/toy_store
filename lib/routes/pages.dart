@@ -5,9 +5,11 @@ import 'package:toyland_mobile/presentation/views/checkout/checkout_binding.dart
 import 'package:toyland_mobile/presentation/views/checkout/checkout_screen.dart';
 import 'package:toyland_mobile/presentation/views/forgotpass/forgotpass_binding.dart';
 import 'package:toyland_mobile/presentation/views/forgotpass/forgotpass_screen.dart';
-import 'package:toyland_mobile/presentation/views/home/home_bindings.dart';
+import 'package:toyland_mobile/presentation/views/home/home_binding.dart';
 import 'package:toyland_mobile/presentation/views/home/home_screen.dart';
 import 'package:toyland_mobile/presentation/views/login/login_bindings.dart';
+import 'package:toyland_mobile/presentation/views/order/order_bindings.dart';
+import 'package:toyland_mobile/presentation/views/order/order_screen.dart';
 import 'package:toyland_mobile/presentation/views/profile/profile.dart';
 import 'package:toyland_mobile/presentation/views/profile/profile_bindings.dart';
 import 'package:toyland_mobile/presentation/views/search/search_screen.dart';
@@ -25,12 +27,21 @@ class Pages {
       page: () => LoginScreen(),
       binding: LoginBindings(),
     ),
+     GetPage(
+      name: RouterName.order,
+      page: () => OrderScreen(),
+      binding: OrderBindings(),
+    ),
     GetPage(
       name: RouterName.signup,
       page: () => SignupScreen(),
       binding: SignupBindings(),
     ),
+    GetPage(name: RouterName.home, 
+    page: () => HomeScreen(),
+    binding: HomeBinding(),
 
+    ),
     GetPage(
       name: RouterName.forgotpass,
       page: () => ForgotpassScreen(),
@@ -46,16 +57,11 @@ class Pages {
       page: () => CheckoutScreen(),
       binding: CheckOutBinding(),
     ),
-    GetPage(name: RouterName.search, page: () => SearchScreen()),
+    // GetPage(name: RouterName.search, page: () => SearchScreen()),
     GetPage(
       name: RouterName.profile,
       page: () => ProfileScreen(),
       binding: ProfileBindings(),
-    ),
-    GetPage(
-      name: RouterName.home,
-      page: () => HomeScreen(),
-      binding: HomeBindings(),
     ),
   ];
 }

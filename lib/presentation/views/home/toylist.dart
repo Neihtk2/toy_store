@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:toyland_mobile/data/models/watch_model.dart';
 
 class ToyCard extends StatelessWidget {
-  final Watch product;
+  final WatchModel product;
   const ToyCard({super.key, required this.product});
 
   @override
@@ -67,25 +68,27 @@ class ToyCard extends StatelessWidget {
               //   ],
               // ),
               // SizedBox(height: 4),
-              Text(
-                product.price.toString(),
-                style: TextStyle(
-                  color: Colors.blueGrey[800],
-                  fontWeight: FontWeight.bold,
+             Text(
+                  NumberFormat("#,###.###", "en_US").format(
+                    double.parse(product.price),
+                  ), // Chuyển String thành double trước khi format
+                  style: TextStyle(
+                    color: Colors.blueGrey[800],
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-              ),
               SizedBox(height: 4),
               Row(
                 children: [
                   Icon(Icons.star, color: Colors.amber, size: 14),
                   SizedBox(width: 2),
                   Text(
-                    '${product.rating}',
+                    '4.3',
                     style: TextStyle(color: Colors.grey, fontSize: 12),
                   ),
                   SizedBox(width: 4),
                   Text(
-                    'Đã bán ${product.soldCount}',
+                    'Đã bán 100',
                     style: TextStyle(color: Colors.grey, fontSize: 10),
                   ),
                 ],
@@ -94,7 +97,7 @@ class ToyCard extends StatelessWidget {
               Row(
                 children: [
                   Text(
-                    product.origin,
+                    product.category.name,
                     style: TextStyle(color: Colors.grey, fontSize: 10),
                   ),
                   SizedBox(width: 20),
@@ -105,7 +108,7 @@ class ToyCard extends StatelessWidget {
                       borderRadius: BorderRadius.circular(2),
                     ),
                     child: Text(
-                      '-${product.discountPercent}%',
+                      '-20%',
                       style: TextStyle(color: Colors.red, fontSize: 10),
                     ),
                   ),
@@ -117,7 +120,7 @@ class ToyCard extends StatelessWidget {
           ),
           // Ảnh sản phẩm
           Image.network(
-            product.imageUrl,
+            product.images[0].url,
             width: 130,
             height: 130,
             fit: BoxFit.contain,

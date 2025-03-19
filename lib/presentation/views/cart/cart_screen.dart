@@ -150,7 +150,7 @@ class CartItemWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-      height: 160,
+      //height: 160,
       width: double.infinity,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,

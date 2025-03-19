@@ -4,21 +4,25 @@ import 'package:toyland_mobile/presentation/controllers/user_controller.dart';
 import 'package:toyland_mobile/presentation/views/profile/edit_profile.dart';
 
 class ProfileScreen extends StatelessWidget {
-  ProfileScreen({Key? key}) : super(key: key) {}
+  ProfileScreen({Key? key}) : super(key: key) {
+     Get.put(UserController()); // 🔥 Đăng ký tại đây (không tối ưu)
+  }
+
   @override
   Widget build(BuildContext context) {
     final UserController userController = Get.find();
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
+        automaticallyImplyLeading: false, 
         backgroundColor: Colors.white,
         elevation: 0,
-        centerTitle: true,
+        centerTitle: false,
         title: const Text(
           "Profile",
           style: TextStyle(
             color: Colors.black,
-            fontSize: 18,
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -47,7 +51,7 @@ class ProfileScreen extends StatelessWidget {
             ),
           );
         }
-        // Debug API
+// Debug API
 
         return SingleChildScrollView(
           padding: const EdgeInsets.all(20),
@@ -84,9 +88,7 @@ class ProfileScreen extends StatelessWidget {
 
               // Tên người dùng
               Text(
-                user.username?.isNotEmpty == true
-                    ? user.username!
-                    : "Chưa có tên",
+                user.username?.isNotEmpty == true ? user.username! : "Chưa có tên",
                 style: const TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
@@ -97,10 +99,7 @@ class ProfileScreen extends StatelessWidget {
 
               // Các trường thông tin người dùng
               _buildProfileField("Full Name", user.username ?? "Chưa có tên"),
-              _buildProfileField(
-                "Email Address",
-                user.email ?? "Chưa có email",
-              ),
+              _buildProfileField("Email Address", user.email ?? "Chưa có email"),
             ],
           ),
         );
@@ -112,7 +111,10 @@ class ProfileScreen extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: const TextStyle(fontSize: 14, color: Colors.grey)),
+        Text(
+          label,
+          style: const TextStyle(fontSize: 14, color: Colors.grey),
+        ),
         const SizedBox(height: 5),
         TextFormField(
           initialValue: value,

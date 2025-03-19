@@ -32,19 +32,19 @@ class AuthRepository implements AuthRepositoryService {
   }
 Future<MeModel?> getUser(String token) async {
   try {
-    print("Gọi API lấy thông tin người dùng...");
+    //print("Gọi API lấy thông tin người dùng...");
     final response = await _api.getMe(token);
-    print("Phản hồi API: ${response.statusCode} - ${response.data}");
+    //print("Phản hồi API: ${response.statusCode} - ${response.data}");
 
     if (response.statusCode == 200 || response.statusCode == 201) {
       var responseData = response.data;
       
       if (responseData == null || responseData['data'] == null) {
-        print("Lỗi: Dữ liệu trả về từ API bị null");
+       // print("Lỗi: Dữ liệu trả về từ API bị null");
         return null;
       }
 
-      print("Dữ liệu người dùng: ${responseData['data']}");
+      //print("Dữ liệu người dùng: ${responseData['data']}");
       return MeModel.fromJson(responseData['data']);
     } else {
       print("Lỗi: API trả về mã trạng thái ${response.statusCode}");

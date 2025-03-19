@@ -58,7 +58,7 @@ class AuthController extends GetxController {
         );
         if (user != null) {
           _saveTokens(user.accessToken, user.refreshToken);
-          Get.toNamed(RouterName.home);
+          Get.offAllNamed(RouterName.home);
         } else {
           Get.snackbar('Error', 'Login failed');
         }

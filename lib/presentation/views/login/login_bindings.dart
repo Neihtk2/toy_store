@@ -7,6 +7,6 @@ class LoginBindings extends Bindings {
   @override
   void dependencies() {
     Get.lazyPut<AuthController>(() => AuthController());
-    // Get.lazyPut<AuthRepository>(() => AuthRepository());
+   // Get.lazyPut<AuthRepository>(() => AuthRepository());
   }
 }

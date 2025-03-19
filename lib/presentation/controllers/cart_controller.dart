@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 import 'package:toyland_mobile/core/constants/config.dart';
@@ -32,6 +33,39 @@ class CartController extends GetxController {
       error.value = '';
     } catch (e) {
       error.value = "Lỗi khi tải giỏ hàng: $e";
+    } finally {
+      isLoading.value = false;
+    }
+  }
+
+  Future<void> addCart(String id, String amount) async {
+    isLoading.value = true;
+    String token = GetStorage().read(MyConfig.ACCESS_TOKEN);
+
+    if (id.isEmpty || amount.isEmpty) {
+      Get.snackbar(
+        'Lỗi',
+        'Vui lòng nhập đầy đủ thông tin sản phẩm',
+        snackPosition: SnackPosition.BOTTOM,
+      );
+      isLoading.value = false;
+      return;
+    }
+
+    try {
+      await _repo.postProducts(id, amount);
+
+      // Hiển thị thông báo thành công
+     
+    } catch (e) {
+      error.value = "Lỗi khi thêm vào giỏ hàng: $e";
+      Get.snackbar(
+        'Lỗi',
+        'Có lỗi xảy ra khi thêm vào giỏ hàng',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+      );
     } finally {
       isLoading.value = false;
     }

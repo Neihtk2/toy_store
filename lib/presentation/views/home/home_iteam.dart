@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:toyland_mobile/data/models/watch_model.dart';
+import 'package:toyland_mobile/data/repositories/auth/auth_repository.dart';
 import 'package:toyland_mobile/data/repositories/watch/watch_responsitory.dart';
-import 'package:toyland_mobile/presentation/views/cart/cart_screen.dart';
+import 'package:toyland_mobile/presentation/controllers/product_controller.dart';
 import 'package:toyland_mobile/presentation/views/home/drawer_menu.dart';
+import 'package:toyland_mobile/presentation/views/home/top_product.dart';
 import 'package:toyland_mobile/presentation/views/home/toy_item.dart';
 import 'package:toyland_mobile/presentation/views/home/toylist.dart';
 import 'package:toyland_mobile/presentation/views/search/search_screen.dart';
@@ -12,88 +14,13 @@ import 'package:toyland_mobile/presentation/views/toys/toys_detail.dart';
 import 'package:toyland_mobile/routes/router_name.dart';
 
 class HomeItem extends StatelessWidget {
-  HomeItem({super.key});
-
-  List<Watch> watches = [
-    Watch(
-      id: 1,
-      name: 'Rolex Submariner',
-      brand: 'Rolex',
-      price: 28000000,
-      imageUrl:
-          'https://www.manhattantoy.com/cdn/shop/products/Untitled-1.jpg?v=1673024231&width=1000',
-      rating: 4.9,
-      soldCount: 125,
-      isFavorite: true,
-      origin: 'Thụy Sĩ',
-      discountPercent: 10,
-    ),
-    Watch(
-      id: 2,
-      name: 'Casio G-Shock',
-      brand: 'Casio',
-      price: 3500000,
-      imageUrl:
-          'https://www.manhattantoy.com/cdn/shop/products/Untitled-1.jpg?v=1673024231&width=1000',
-      rating: 4.7,
-      soldCount: 328,
-      isFavorite: false,
-      origin: 'Nhật Bản',
-      discountPercent: 15,
-    ),
-    Watch(
-      id: 3,
-      name: 'Apple Watch Series 7',
-      brand: 'Apple',
-      price: 12000000,
-      imageUrl:
-          'https://www.manhattantoy.com/cdn/shop/products/Untitled-1.jpg?v=1673024231&width=1000',
-      rating: 4.8,
-      soldCount: 427,
-      isFavorite: true,
-      origin: 'Mỹ',
-      discountPercent: 5,
-    ),
-    Watch(
-      id: 4,
-      name: 'Seiko Automatic',
-      brand: 'Seiko',
-      price: 6500000,
-      imageUrl:
-          'https://www.manhattantoy.com/cdn/shop/products/Untitled-1.jpg?v=1673024231&width=1000',
-      rating: 4.6,
-      soldCount: 215,
-      isFavorite: false,
-      origin: 'Nhật Bản',
-      discountPercent: 12,
-    ),
-    Watch(
-      id: 5,
-      name: 'Citizen Eco-Drive',
-      brand: 'Citizen',
-      price: 7200000,
-      imageUrl:
-          'https://www.manhattantoy.com/cdn/shop/products/Untitled-1.jpg?v=1673024231&width=1000',
-      rating: 4.5,
-      soldCount: 186,
-      isFavorite: true,
-      origin: 'Nhật Bản',
-      discountPercent: 8,
-    ),
-    Watch(
-      id: 6,
-      name: 'Omega Seamaster',
-      brand: 'Omega',
-      price: 18500000,
-      imageUrl:
-          'https://www.manhattantoy.com/cdn/shop/products/Untitled-1.jpg?v=1673024231&width=1000',
-      rating: 4.8,
-      soldCount: 109,
-      isFavorite: true,
-      origin: 'Thụy Sĩ',
-      discountPercent: 7,
-    ),
-  ];
+  HomeItem({super.key}) {
+    Get.put(ProductController());
+    Get.put(AuthRepository()); 
+ // Đưa UserController vào GetX khi HomeItem được tạo
+  }
+  
+  final ProductController productController = Get.find();
 
   @override
   Widget build(BuildContext context) {
@@ -110,16 +37,13 @@ class HomeItem extends StatelessWidget {
             _buildCategoryIcons(),
             const SizedBox(height: 10),
             _buildSection("Popular Toys", _buildHorizontalList(), () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => PopularToysScreen()),
-              );
+              Get.to(() => PopularToysScreen());
             }),
             const SizedBox(height: 10),
             _buildSection("New Toys", _buildVerticalList(), () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (_) => NewToysScreen()),
+                MaterialPageRoute(builder: (_) => PopularToysScreen()),
               );
             }),
           ],
@@ -130,6 +54,7 @@ class HomeItem extends StatelessWidget {
 
   AppBar _buildAppBar() {
     return AppBar(
+      automaticallyImplyLeading: false, 
       backgroundColor: const Color(0xFFF8F9FA),
       elevation: 0,
       title: const Row(
@@ -152,8 +77,7 @@ class HomeItem extends StatelessWidget {
       actions: [
         GestureDetector(
           onTap: () {
-            Get.to(CartScreen());
-            // Get.toNamed(RouterName.cart);
+            Get.toNamed(RouterName.cart);
           },
           child: Stack(
             children: const [
@@ -176,7 +100,7 @@ class HomeItem extends StatelessWidget {
 
   Widget _buildSearchBar() {
     return GestureDetector(
-      onTap: () => Get.to(() => SearchScreen()), // Điều hướng sang màn tìm kiếm
+      // onTap: () => Get.to(() => SearchScreen()), // Điều hướng sang màn tìm kiếm
       child: Container(
         height: 50,
         decoration: BoxDecoration(
@@ -249,32 +173,55 @@ class HomeItem extends StatelessWidget {
     );
   }
 
-  Widget _buildHorizontalList() {
+ Widget _buildHorizontalList() {
+  return Obx(() {
+    if (productController.isLoading.value) {
+      return const Center(child: CircularProgressIndicator());
+    } else if (productController.filteredProductItem.isEmpty) {
+      return const Center(child: Text("Không có sản phẩm nào."));
+    }
+
     return SizedBox(
       height: 250,
       child: ListView.builder(
         scrollDirection: Axis.horizontal,
-        itemCount: watches.length,
+        itemCount: productController.filteredProductItem.length,
         itemBuilder: (context, index) {
-          return GestureDetector(
-            onTap: () {
-              Get.to(() => ToyDetailScreen());
-            },
-            child: WatchCard(watch: watches[index]),
+          final watch = productController.filteredProductItem[index];
+          return Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8.0), // Khoảng cách giữa các item
+            child: GestureDetector(
+              onTap: () {
+                 Get.to(() => ToyDetailScreen(watch: watch)); 
+              },
+              child: WatchCard(watch: watch),
+            ),
           );
         },
       ),
     );
-  }
+  });
+}
 
-  Widget _buildVerticalList() {
+
+
+Widget _buildVerticalList() {
+  return Obx(() {
     return ListView.builder(
       physics: const NeverScrollableScrollPhysics(),
       shrinkWrap: true,
-      itemCount: watches.length,
-      itemBuilder: (context, index) => ToyCard(product: watches[index]),
+      itemCount: productController.filteredProductItem.length,
+      itemBuilder: (context, index) {
+        final watch = productController.filteredProductItem[index];
+        return GestureDetector(
+           onTap: () {
+                 Get.to(() => ToyDetailScreen(watch: watch)); 
+              },
+          child: ToyCard(product: watch)); // ✅ Thêm `return`
+      },
     );
-  }
+  });
+}
 }
 
 class _CircleIcon extends StatelessWidget {
@@ -306,25 +253,3 @@ class _NotificationDot extends StatelessWidget {
   }
 }
 
-// =======================
-// Tạo màn hình mới
-// =======================
-class PopularToysScreen extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text("Popular Toys")),
-      body: const Center(child: Text("Danh sách Popular Toys ở đây")),
-    );
-  }
-}
-
-class NewToysScreen extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text("New Toys")),
-      body: const Center(child: Text("Danh sách New Toys ở đây")),
-    );
-  }
-}
