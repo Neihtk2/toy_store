@@ -1,11 +1,11 @@
 import 'package:get/get.dart';
 import 'package:toyland_mobile/data/repositories/auth/auth_repository.dart';
-import 'package:toyland_mobile/presentation/controllers/user_controller.dart';
+import 'package:toyland_mobile/presentation/controllers/auth_controller.dart';
 
-class ProfileBindings extends Bindings {
+class HomeBindings extends Bindings {
   @override
   void dependencies() {
+    // Get.lazyPut<AuthController>(() => AuthController());
     Get.lazyPut<AuthRepository>(() => AuthRepository());
-    Get.lazyPut<UserController>(() => UserController());
   }
 }
