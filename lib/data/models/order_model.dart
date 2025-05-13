@@ -132,20 +132,26 @@ class OrderDetail {
   final int productId;
   final int unitPrice;
   final String productName;
+  final bool isRating;
+  final ProductModel? product;
 
   OrderDetail({
     required this.amount,
     required this.productId,
     required this.unitPrice,
     required this.productName,
+    required this.isRating,
+    this.product,
   });
 
   factory OrderDetail.fromJson(Map<String, dynamic> json) {
     return OrderDetail(
-      amount: json["amount"] as int? ?? 0,
-      productId: json["productId"] as int? ?? 0,
-      unitPrice: json["unitPrice"] as int? ?? 0,
+      amount: json["amount"] ?? 0,
+      productId: json["productId"] ?? 0,
+      unitPrice: json["unitPrice"] ?? 0,
       productName: json["productName"] ?? '',
+      isRating: json["isRating"] ?? false,
+      product: json["product"] != null ? ProductModel.fromJson(json["product"]) : null,
     );
   }
 
@@ -154,5 +160,130 @@ class OrderDetail {
         "productId": productId,
         "unitPrice": unitPrice,
         "productName": productName,
+        "isRating": isRating,
+        "product": product?.toJson(),
       };
 }
+class ProductModel {
+  final int id;
+  final int categoryId;
+  final int branchId;
+  final int? shopifyId;
+  final int? shopBaseId;
+  final String name;
+  final String description;
+  final int price;
+  final int? salePrice;
+  final int stockAmount;
+  final int sold;
+  final String? type;
+  final String slug;
+  final bool isActive;
+  final DateTime createdAt;
+  final DateTime updatedAt;
+  final List<ProductImage> images;
+
+  ProductModel({
+    required this.id,
+    required this.categoryId,
+    required this.branchId,
+    this.shopifyId,
+    this.shopBaseId,
+    required this.name,
+    required this.description,
+    required this.price,
+    this.salePrice,
+    required this.stockAmount,
+    required this.sold,
+    this.type,
+    required this.slug,
+    required this.isActive,
+    required this.createdAt,
+    required this.updatedAt,
+    required this.images,
+  });
+
+  factory ProductModel.fromJson(Map<String, dynamic> json) {
+    return ProductModel(
+      id: json['id'],
+      categoryId: json['categoryId'],
+      branchId: json['branchId'],
+      shopifyId: json['shopifyId'],
+      shopBaseId: json['shopBaseId'],
+      name: json['name'] ?? '',
+      description: json['description'] ?? '',
+      price: json['price'] ?? 0,
+      salePrice: json['salePrice'],
+      stockAmount: json['stockAmount'] ?? 0,
+      sold: json['sold'] ?? 0,
+      type: json['type'],
+      slug: json['slug'] ?? '',
+      isActive: json['isActive'] ?? false,
+      createdAt: DateTime.parse(json['createdAt']),
+      updatedAt: DateTime.parse(json['updatedAt']),
+      images: (json['images'] as List<dynamic>?)
+              ?.map((img) => ProductImage.fromJson(img))
+              .toList() ??
+          [],
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+        "id": id,
+        "categoryId": categoryId,
+        "branchId": branchId,
+        "shopifyId": shopifyId,
+        "shopBaseId": shopBaseId,
+        "name": name,
+        "description": description,
+        "price": price,
+        "salePrice": salePrice,
+        "stockAmount": stockAmount,
+        "sold": sold,
+        "type": type,
+        "slug": slug,
+        "isActive": isActive,
+        "createdAt": createdAt.toIso8601String(),
+        "updatedAt": updatedAt.toIso8601String(),
+        "images": images.map((e) => e.toJson()).toList(),
+      };
+}
+
+class ProductImage {
+  final int id;
+  final int productId;
+  final String url;
+  final bool isActive;
+  final DateTime createdAt;
+  final DateTime updatedAt;
+
+  ProductImage({
+    required this.id,
+    required this.productId,
+    required this.url,
+    required this.isActive,
+    required this.createdAt,
+    required this.updatedAt,
+  });
+
+  factory ProductImage.fromJson(Map<String, dynamic> json) {
+    return ProductImage(
+      id: json['id'],
+      productId: json['productId'],
+      url: json['url'] ?? '',
+      isActive: json['isActive'] ?? false,
+      createdAt: DateTime.parse(json['createdAt']),
+      updatedAt: DateTime.parse(json['updatedAt']),
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+        "id": id,
+        "productId": productId,
+        "url": url,
+        "isActive": isActive,
+        "createdAt": createdAt.toIso8601String(),
+        "updatedAt": updatedAt.toIso8601String(),
+      };
+}
+

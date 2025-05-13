@@ -52,7 +52,7 @@ class PopularToysScreen extends StatelessWidget {
           final watch = productController.filteredProductItem[index];
           return GestureDetector(
             onTap: () {
-              //  Get.to(() => ToyDetailScreen(watch: watch)); // Truyền dữ liệu vào màn hình chi tiết
+               Get.to(() => ToyDetailScreen(watch: watch)); // Truyền dữ liệu vào màn hình chi tiết
             },
             child: WatchCard(watch: watch),
           );

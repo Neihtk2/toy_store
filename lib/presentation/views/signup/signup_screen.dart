@@ -26,7 +26,7 @@ class SignupScreen extends GetView<AuthController> {
             children: [
               SizedBox(height: 10.h),
               Text(
-                'Create Account',
+                'Tạo tài khoản',
                 style: TextStyle(
                   fontSize: 26.sp,
                   fontWeight: FontWeight.bold,
@@ -35,7 +35,7 @@ class SignupScreen extends GetView<AuthController> {
               ),
               SizedBox(height: 10.h),
               Text(
-                "Let's Create Account Together",
+                "Hãy cùng nhau tạo tài khoản!",
                 style: TextStyle(
                   fontSize: 16.sp,
                   color: Colors.grey,
@@ -43,19 +43,19 @@ class SignupScreen extends GetView<AuthController> {
                 ),
               ),
               SizedBox(height: 10.h),
-              _buildTextField("Your name"),
+              _buildTextField("Tên"),
               _buildNameField(),
               SizedBox(height: 10.h),
               _buildTextField("Email"),
               _buildEmailField(),
               SizedBox(height: 10.h),
-              _buildTextField("Password"),
+              _buildTextField("Mật khẩu"),
               _buildPasswordField(),
               SizedBox(height: 10.h),
-              _buildTextField("Address"),
+              _buildTextField("Địa chỉ"),
               _buildAddressField(),
               SizedBox(height: 10.h),
-              _buildTextField("Gender"),
+              _buildTextField("Giới tính"),
               _buildGenderSelection(),
               SizedBox(height: 20.h),
               _buildSignUpButton(),

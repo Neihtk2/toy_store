@@ -23,7 +23,7 @@ class ForgotpassScreen extends GetView<AuthController> {
             children: [
               SizedBox(height: 60.h),
               Text(
-                'Recovery Password',
+                'Khôi phục mật khẩu',
                 style: TextStyle(
                   fontSize: 26.sp,
                   fontWeight: FontWeight.bold,
@@ -32,7 +32,7 @@ class ForgotpassScreen extends GetView<AuthController> {
               ),
               SizedBox(height: 20.h),
               Text(
-                "Please Enter Your Email Address To Recieve a Verification Code",
+                "Vui lòng nhập địa chỉ email của bạn để nhận mã xác minh",
                 style: TextStyle(
                   fontSize: 16.sp,
                   color: Colors.grey,
@@ -43,7 +43,7 @@ class ForgotpassScreen extends GetView<AuthController> {
               Row(
                 children: [
                   Text(
-                    "Email Address",
+                    "Địa chỉ email",
                     style: TextStyle(
                       fontSize: 17.sp,
                       fontWeight: FontWeight.bold,
@@ -76,7 +76,7 @@ class ForgotpassScreen extends GetView<AuthController> {
     contentPadding: EdgeInsets.symmetric(vertical: 20.h, horizontal: 20.w),
             filled: true,
             fillColor: Colors.grey[100],
-            hintText: "Email Addsress",
+            hintText: "Địa chỉ email",
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(30.r),
               borderSide: BorderSide.none,
@@ -106,7 +106,7 @@ class ForgotpassScreen extends GetView<AuthController> {
                   ? const CircularProgressIndicator()
                   : Center(
                     child: Text(
-                      'Continue',
+                      'Tiếp tục',
                       style: TextStyle(
                         fontSize: 20.sp,
                         fontWeight: FontWeight.w700,

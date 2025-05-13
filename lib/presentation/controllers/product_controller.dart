@@ -6,7 +6,6 @@ import 'package:toyland_mobile/data/repositories/watch/watch_responsitory.dart';
 
 class ProductController extends GetxController {
   final WatchResponsitory _repo = Get.find();
-
   final RxBool isLoading = false.obs;
   final RxString error = ''.obs;
   final RxList<WatchModel> filteredProductItem = <WatchModel>[].obs;

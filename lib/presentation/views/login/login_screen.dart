@@ -22,7 +22,7 @@ class LoginScreen extends GetView<AuthController> {
             children: [
               SizedBox(height: 90.h),
               Text(
-                'Hello Again!',
+                'Watch Store chào bạn!',
                 style: TextStyle(
                   fontSize: 26.sp,
                   fontWeight: FontWeight.bold,
@@ -31,7 +31,7 @@ class LoginScreen extends GetView<AuthController> {
               ),
               SizedBox(height: 20.h),
               Text(
-                "Welcome Back You've Been Missed!",
+                "Chào mừng bạn trở lại!",
                 style: TextStyle(
                   fontSize: 16.sp,
                   color: Colors.grey,
@@ -39,12 +39,12 @@ class LoginScreen extends GetView<AuthController> {
                 ),
               ),
               SizedBox(height: 40.h),
-              _buildTextField('Email Address', _emailController),
+              _buildTextField('Địa chỉ email', _emailController),
               SizedBox(height: 30.h),
               Row(
                 children: [
                   Text(
-                    "Password",
+                    "Mật khẩu",
                     style: TextStyle(
                       fontSize: 17.sp,
                       fontWeight: FontWeight.bold,
@@ -63,7 +63,7 @@ class LoginScreen extends GetView<AuthController> {
                 child: TextButton(
                   onPressed: () => Get.toNamed(RouterName.forgotpass),
                   child: Text(
-                    'Recovery Password',
+                    'Khôi phục mật khẩu',
                     style: TextStyle(color: Colors.grey[600]),
                   ),
                 ),
@@ -73,11 +73,11 @@ class LoginScreen extends GetView<AuthController> {
               SizedBox(height: 140.h),
               RichText(
                 text: TextSpan(
-                  text: "Don't Have An Account? ",
+                  text: "Bạn chưa có tài khoản? ",
                   style: TextStyle(color: Colors.black87),
                   children: [
                     TextSpan(
-                      text: 'Sign Up For Free',
+                      text: 'Đăng ký ở đây!',
                       style: TextStyle(color: Colors.blue),
                       recognizer:
                           TapGestureRecognizer()
@@ -184,7 +184,7 @@ class LoginScreen extends GetView<AuthController> {
                   ? Center(child: const CircularProgressIndicator())
                   : Center(
                     child: Text(
-                      'Login',
+                      'Đăng nhập',
                       style: TextStyle(
                         fontSize: 20.sp,
                         fontWeight: FontWeight.w700,
