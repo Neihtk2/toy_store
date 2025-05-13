@@ -13,14 +13,14 @@ class ProfileScreen extends StatelessWidget {
     final UserController userController = Get.find();
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: const Color(0xFFF8F9FA),
       appBar: AppBar(
         automaticallyImplyLeading: false, 
-        backgroundColor: Colors.white,
+        backgroundColor: const Color(0xFFF8F9FA),
         elevation: 0,
         centerTitle: false,
         title: const Text(
-          "Profile",
+          "Trang cá nhân",
           style: TextStyle(
             color: Colors.black,
             fontWeight: FontWeight.bold,
@@ -98,8 +98,8 @@ class ProfileScreen extends StatelessWidget {
               const SizedBox(height: 20),
 
               // Các trường thông tin người dùng
-              _buildProfileField("Full Name", user.username ?? "Chưa có tên"),
-              _buildProfileField("Email Address", user.email ?? "Chưa có email"),
+              _buildProfileField("Tên", user.username ?? "Chưa có tên"),
+              _buildProfileField("Địa chỉ email ", user.email ?? "Chưa có email"),
             ],
           ),
         );
