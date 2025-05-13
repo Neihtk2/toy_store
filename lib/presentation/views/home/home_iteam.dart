@@ -16,10 +16,10 @@ import 'package:toyland_mobile/routes/router_name.dart';
 class HomeItem extends StatelessWidget {
   HomeItem({super.key}) {
     Get.put(ProductController());
-    Get.put(AuthRepository()); 
- // Đưa UserController vào GetX khi HomeItem được tạo
+    Get.put(AuthRepository());
+    // Đưa UserController vào GetX khi HomeItem được tạo
   }
-  
+
   final ProductController productController = Get.find();
 
   @override
@@ -36,11 +36,11 @@ class HomeItem extends StatelessWidget {
             const SizedBox(height: 10),
             _buildCategoryIcons(),
             const SizedBox(height: 10),
-            _buildSection("Popular Toys", _buildHorizontalList(), () {
+            _buildSection("Sản phẩm phổ biến", _buildHorizontalList(), () {
               Get.to(() => PopularToysScreen());
             }),
             const SizedBox(height: 10),
-            _buildSection("New Toys", _buildVerticalList(), () {
+            _buildSection("Sản phẩm mới", _buildVerticalList(), () {
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (_) => PopularToysScreen()),
@@ -54,7 +54,6 @@ class HomeItem extends StatelessWidget {
 
   AppBar _buildAppBar() {
     return AppBar(
-      automaticallyImplyLeading: false, 
       backgroundColor: const Color(0xFFF8F9FA),
       elevation: 0,
       title: const Row(
@@ -63,7 +62,7 @@ class HomeItem extends StatelessWidget {
           Icon(Icons.location_on, color: Colors.red, size: 18),
           SizedBox(width: 4),
           Text(
-            "ToyLand",
+            "Watch Store",
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.bold,
@@ -120,7 +119,7 @@ class HomeItem extends StatelessWidget {
             Icon(Icons.search, color: Colors.grey),
             SizedBox(width: 10),
             Text(
-              "Looking for toys",
+              "Tìm kiếm sản phẩm ...",
               style: TextStyle(color: Colors.grey, fontSize: 16),
             ),
           ],
@@ -129,18 +128,36 @@ class HomeItem extends StatelessWidget {
     );
   }
 
-  Widget _buildCategoryIcons() {
-    final icons = [
-      Icons.toys_rounded,
-      Icons.abc,
-      Icons.access_alarm,
-      Icons.toys,
-      Icons.toys_sharp,
-    ];
-    return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: icons.map((icon) => _CircleIcon(icon: icon)).toList(),
-    );
+  Widget _buildHorizontalList() {
+    return Obx(() {
+      if (productController.isLoading.value) {
+        return const Center(child: CircularProgressIndicator());
+      } else if (productController.filteredProductItem.isEmpty) {
+        return const Center(child: Text("Không có sản phẩm nào."));
+      }
+
+      return SizedBox(
+        height: 250,
+        child: ListView.builder(
+          scrollDirection: Axis.horizontal,
+          itemCount: productController.filteredProductItem.length,
+          itemBuilder: (context, index) {
+            final watch = productController.filteredProductItem[index];
+            return Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 8.0,
+              ), // Khoảng cách giữa các item
+              child: GestureDetector(
+                onTap: () {
+                  Get.to(() => ToyDetailScreen(watch: watch));
+                },
+                child: WatchCard(watch: watch),
+              ),
+            );
+          },
+        ),
+      );
+    });
   }
 
   Widget _buildSection(String title, Widget content, VoidCallback onSeeAll) {
@@ -157,7 +174,7 @@ class HomeItem extends StatelessWidget {
             GestureDetector(
               onTap: onSeeAll,
               child: const Text(
-                "See all",
+                "Xem tất cả",
                 style: TextStyle(
                   fontSize: 16,
                   color: Colors.blue,
@@ -173,55 +190,73 @@ class HomeItem extends StatelessWidget {
     );
   }
 
- Widget _buildHorizontalList() {
-  return Obx(() {
-    if (productController.isLoading.value) {
-      return const Center(child: CircularProgressIndicator());
-    } else if (productController.filteredProductItem.isEmpty) {
-      return const Center(child: Text("Không có sản phẩm nào."));
-    }
+  Widget _buildCategoryIcons() {
+    return Obx(() {
+      if (productController.isLoading.value) {
+        return const Center(child: CircularProgressIndicator());
+      } else if (productController.filteredProductItem.isEmpty) {
+        return const Center(child: Text("Không có sản phẩm nào."));
+      }
 
-    return SizedBox(
-      height: 250,
-      child: ListView.builder(
-        scrollDirection: Axis.horizontal,
+      // Lấy danh sách các branch name duy nhất
+      final uniqueBranches =
+          productController.filteredProductItem
+              .map((product) => product.branch?.name)
+              .toSet()
+              .where((name) => name != null)
+              .toList();
+
+      return SizedBox(
+        height: 60,
+        child: ListView.builder(
+          scrollDirection: Axis.horizontal,
+          itemCount: uniqueBranches.length,
+          itemBuilder: (context, index) {
+            final branchName = uniqueBranches[index];
+
+            return Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 8.0),
+              child: GestureDetector(
+                onTap: () {
+                  // TODO: Handle tap on branch (e.g., filter products by branch)
+                },
+                child: Chip(
+                  label: Text(branchName ?? ""),
+                  backgroundColor: Colors.white,
+                  labelStyle: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black87,
+                  ),
+                  shape: const StadiumBorder(
+                    side: BorderSide.none, // Xóa viền
+                  ),
+                ),
+              ),
+            );
+          },
+        ),
+      );
+    });
+  }
+
+  Widget _buildVerticalList() {
+    return Obx(() {
+      return ListView.builder(
+        physics: const NeverScrollableScrollPhysics(),
+        shrinkWrap: true,
         itemCount: productController.filteredProductItem.length,
         itemBuilder: (context, index) {
           final watch = productController.filteredProductItem[index];
-          return Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8.0), // Khoảng cách giữa các item
-            child: GestureDetector(
-              onTap: () {
-                 Get.to(() => ToyDetailScreen(watch: watch)); 
-              },
-              child: WatchCard(watch: watch),
-            ),
-          );
+          return GestureDetector(
+            onTap: () {
+              Get.to(() => ToyDetailScreen(watch: watch));
+            },
+            child: ToyCard(product: watch),
+          ); // ✅ Thêm `return`
         },
-      ),
-    );
-  });
-}
-
-
-
-Widget _buildVerticalList() {
-  return Obx(() {
-    return ListView.builder(
-      physics: const NeverScrollableScrollPhysics(),
-      shrinkWrap: true,
-      itemCount: productController.filteredProductItem.length,
-      itemBuilder: (context, index) {
-        final watch = productController.filteredProductItem[index];
-        return GestureDetector(
-           onTap: () {
-                 Get.to(() => ToyDetailScreen(watch: watch)); 
-              },
-          child: ToyCard(product: watch)); // ✅ Thêm `return`
-      },
-    );
-  });
-}
+      );
+    });
+  }
 }
 
 class _CircleIcon extends StatelessWidget {
@@ -252,4 +287,3 @@ class _NotificationDot extends StatelessWidget {
     );
   }
 }
-

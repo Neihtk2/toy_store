@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:toyland_mobile/presentation/views/order/rating_screen.dart';
 
 class EditProfile extends StatefulWidget {
   const EditProfile({Key? key}) : super(key: key);
@@ -31,7 +32,7 @@ class _EditProfileState extends State<EditProfile> {
           IconButton(
             icon: const Icon(Icons.edit, color: Colors.blue),
             onPressed: () {
-              // Chức năng chỉnh sửa
+              Get.dialog(RatingDialog());
             },
           ),
         ],
