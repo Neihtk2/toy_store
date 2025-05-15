@@ -62,20 +62,7 @@ class ApiService extends Get.GetxService {
         },
       ),
     );
-    
 
-    //   if (response.statusCode == 200) {
-    //     return CartItemData.fromJson(response.data);
-    //   } else {
-    //     getx.Get.snackbar(S
-    //       'Thông báo',
-    //       'Phiên đăng nhập đã hết hạn. Vui lòng đăng nhập lại.',
-    //       snackPosition: getx.SnackPosition.BOTTOM,
-    //     );
-    //     await GetStorage().remove(MyConfig.ACCESS_TOKEN_KEY);
-    //     getx.Get.offAllNamed(RouterName.login);
-    //     throw Exception('Failed to load shoes');
-    //   }
   }
 
   Future<Response> getMe(String token) async {
