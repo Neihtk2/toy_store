@@ -19,7 +19,7 @@ class OrderScreen extends StatelessWidget {
         backgroundColor: const Color(0xFFF8F9FA),
         elevation: 0,
         title: const Text(
-          "My Orders",
+          "Đơn hàng của tôi",
           style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
         ),
       ),

@@ -9,4 +9,6 @@ class Endpoints {
   static const String getProducts = '/api/v1/products';
   static const String addProducts = '/api/v1/orders/add-cart';
   static const String getOrder = '/api/v1/orders/list?page=1&limit=30';
+  static const String getLike = '/api/v1/favorites/like';
+  static const String postLike = '/api/v1/favorites/like';
 }

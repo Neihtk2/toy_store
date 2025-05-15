@@ -1,5 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:curved_navigation_bar/curved_navigation_bar.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:toyland_mobile/data/repositories/cart/cart_repository.dart';
+import 'package:toyland_mobile/presentation/controllers/cart_controller.dart';
+import 'package:toyland_mobile/presentation/controllers/toy_controller.dart';
+import 'package:toyland_mobile/presentation/controllers/user_controller.dart';
 import 'package:toyland_mobile/presentation/views/home/home_iteam.dart';
 import 'package:toyland_mobile/presentation/views/order/order_screen.dart';
 import 'package:toyland_mobile/presentation/views/profile/profile.dart';
@@ -17,6 +23,16 @@ class _HomeScreenState extends State<HomeScreen> {
     OrderScreen(),
    ProfileScreen(),
   ];
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    Get.put(ToysController());
+    Get.put(UserController());
+    Get.put(CartRepository());
+    Get.put(CartController());
+    
+  }
 
   @override
   Widget build(BuildContext context) {
