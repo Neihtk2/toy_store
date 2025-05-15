@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:toyland_mobile/data/models/watch_model.dart';
 import 'package:toyland_mobile/data/repositories/cart/cart_repository.dart';
 import 'package:toyland_mobile/presentation/controllers/cart_controller.dart';
+import 'package:toyland_mobile/presentation/controllers/like_controller.dart';
 
 class ToyDetailScreen extends StatefulWidget {
   final WatchModel watch;
@@ -22,9 +24,9 @@ class _ToyDetailScreenState extends State<ToyDetailScreen> {
   bool isLoading = false;
   late final CartController cartController;
   late final CartRepository cartRepository;
+  late final likeController = Get.put(LikeController());
 
-
-    @override
+  @override
   void initState() {
     super.initState();
     totalPrice = double.parse(widget.watch.price);
@@ -34,8 +36,8 @@ class _ToyDetailScreenState extends State<ToyDetailScreen> {
 
     // Sau đó mới đăng ký CartController
     cartController = Get.put(CartController());
+    likeController.fetchFavoriteByProductId(widget.watch.id);
   }
-
 
   void _updateQuantity(int newQuantity) {
     setState(() {
@@ -86,7 +88,7 @@ class _ToyDetailScreenState extends State<ToyDetailScreen> {
         onPressed: () => Get.back(),
       ),
       title: const Text(
-        "Toy Store",
+        "Watch Store",
         style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
       ),
       centerTitle: true,
@@ -156,7 +158,7 @@ class _ToyDetailScreenState extends State<ToyDetailScreen> {
                 fontSize: 14,
               ),
             ),
-            _buildFavoriteButton(),
+            _buildFavoriteButton(widget.watch.id),
           ],
         ),
         const SizedBox(height: 5),
@@ -170,7 +172,10 @@ class _ToyDetailScreenState extends State<ToyDetailScreen> {
         ),
         const SizedBox(height: 10),
         Text(
-          NumberFormat("#,###.###", "en_US").format(double.parse(widget.watch.price)),
+          NumberFormat(
+            "#,###.###",
+            "en_US",
+          ).format(double.parse(widget.watch.price)),
           style: const TextStyle(
             fontSize: 22,
             fontWeight: FontWeight.bold,
@@ -179,11 +184,8 @@ class _ToyDetailScreenState extends State<ToyDetailScreen> {
         ),
         const SizedBox(height: 10),
         Text(
-          widget.watch.slug,
-          style: const TextStyle(
-            fontSize: 16,
-            color: Colors.grey,
-          ),
+          widget.watch.description??"",
+          style: const TextStyle(fontSize: 16, color: Colors.grey),
         ),
       ],
     );
@@ -203,41 +205,61 @@ class _ToyDetailScreenState extends State<ToyDetailScreen> {
         ),
         const SizedBox(height: 10),
         Row(
-          children: widget.watch.images
-              .map((img) => Padding(
-                    padding: const EdgeInsets.only(right: 10),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(10),
-                      child: Image.network(
-                        img.url,
-                        width: 80,
-                        height: 80,
-                        fit: BoxFit.cover,
+          children:
+              widget.watch.images
+                  .map(
+                    (img) => Padding(
+                      padding: const EdgeInsets.only(right: 10),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(10),
+                        child: Image.network(
+                          img.url,
+                          width: 80,
+                          height: 80,
+                          fit: BoxFit.cover,
+                        ),
                       ),
                     ),
-                  ))
-              .toList(),
+                  )
+                  .toList(),
         ),
       ],
     );
   }
 
-  Widget _buildFavoriteButton() {
+  Widget _buildFavoriteButton(int productId) {
+  return Obx(() {
+    if (likeController.isLoading.value) {
+      return const SizedBox(
+        width: 24,
+        height: 24,
+        child: CircularProgressIndicator(strokeWidth: 2),
+      );
+    }
+
     return IconButton(
       icon: Icon(
-        isFavorite ? Icons.favorite : Icons.favorite_border_outlined,
-        color: isFavorite ? Colors.red : Colors.grey,
+        likeController.isLiked.value ? Icons.favorite : Icons.favorite_border,
+        color: Colors.red,
       ),
-      onPressed: () => setState(() => isFavorite = !isFavorite),
+      onPressed: () async {
+        await likeController.toggleLike(productId);
+        await likeController.fetchFavoriteByProductId(productId);
+      },
     );
-  }
+  });
+}
+
+
+
+
 
   Widget _buildQuantitySelector(int quantity, Function(int) onQuantityChanged) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         const Text(
-          "Quantity",
+          "Số lượng",
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.bold,
@@ -253,7 +275,10 @@ class _ToyDetailScreenState extends State<ToyDetailScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Text(
                 quantity.toString(),
-                style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
             _buildQuantityButton(Icons.add, () {
@@ -294,27 +319,44 @@ class _ToyDetailScreenState extends State<ToyDetailScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Text("Price", style: TextStyle(fontSize: 14, color: Colors.grey)),
+              const Text(
+                "Giá",
+                style: TextStyle(fontSize: 14, color: Colors.grey),
+              ),
               const SizedBox(height: 5),
               Text(
                 NumberFormat("#,###.###", "en_US").format(totalPrice),
-                style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.black),
+                style: const TextStyle(
+                  fontSize: 22,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                ),
               ),
             ],
           ),
           ElevatedButton(
-            onPressed: isLoading ? null : _addToCart, // Nếu đang loading thì disable nút
+            onPressed:
+                isLoading
+                    ? null
+                    : _addToCart, // Nếu đang loading thì disable nút
             style: ElevatedButton.styleFrom(
               backgroundColor: Colors.blue,
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
             ),
-            child: isLoading
-                ? const SizedBox(
-                    width: 24, 
-                    height: 24, 
-                    child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2),
-                  )
-                : const Text("Add To Cart", style: TextStyle(fontSize: 16, color: Colors.white)),
+            child:
+                isLoading
+                    ? const SizedBox(
+                      width: 24,
+                      height: 24,
+                      child: CircularProgressIndicator(
+                        color: Colors.white,
+                        strokeWidth: 2,
+                      ),
+                    )
+                    : const Text(
+                      "Thêm vào giỏ",
+                      style: TextStyle(fontSize: 16, color: Colors.white),
+                    ),
           ),
         ],
       ),
@@ -326,10 +368,21 @@ class _ToyDetailScreenState extends State<ToyDetailScreen> {
     setState(() => isLoading = true); // Bật loading
 
     try {
-      await cartRepository.postProducts(widget.watch.id.toString(), quantity.toString());
-      Get.snackbar("Success", "Added to cart successfully!", snackPosition: SnackPosition.BOTTOM);
+      await cartRepository.postProducts(
+        widget.watch.id.toString(),
+        quantity.toString(),
+      );
+      Get.snackbar(
+        "Success",
+        "Thêm thành công!",
+        snackPosition: SnackPosition.BOTTOM,
+      );
     } catch (e) {
-      Get.snackbar("Error", "Failed to add to cart!", snackPosition: SnackPosition.BOTTOM);
+      Get.snackbar(
+        "Error",
+        "Lỗi khi thêm vào giỏ hàng!",
+        snackPosition: SnackPosition.BOTTOM,
+      );
     }
 
     setState(() => isLoading = false); // Tắt loading

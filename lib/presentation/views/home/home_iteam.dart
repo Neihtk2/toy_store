@@ -99,7 +99,7 @@ class HomeItem extends StatelessWidget {
 
   Widget _buildSearchBar() {
     return GestureDetector(
-      // onTap: () => Get.to(() => SearchScreen()), // Điều hướng sang màn tìm kiếm
+      onTap: () => Get.to(() => SearchScreen()), // Điều hướng sang màn tìm kiếm
       child: Container(
         height: 50,
         decoration: BoxDecoration(
