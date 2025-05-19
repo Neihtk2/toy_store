@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:toyland_mobile/data/models/product_model.dart';
+
+import 'package:toyland_mobile/presentation/views/home/toy_item.dart';
 import 'package:toyland_mobile/presentation/views/search/search_controller.dart';
 import 'package:toyland_mobile/presentation/views/search/search_result_screen.dart';
+import 'package:toyland_mobile/presentation/views/toys/toys_detail.dart';
 
 class SearchScreen extends StatefulWidget {
   @override
@@ -94,25 +96,26 @@ class _SearchScreenState extends State<SearchScreen> {
       final results = controller.filteredDishes;
       return results.isEmpty
           ? const Center(child: Text("Không tìm thấy sản phẩm nào."))
-          : _buildSuggestionList(results);
+          : GridView.builder(
+            padding: const EdgeInsets.all(10),
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              childAspectRatio: 0.7,
+              crossAxisSpacing: 9,
+              mainAxisSpacing: 8,
+            ),
+            itemCount: results.length,
+            itemBuilder: (context, index) {
+              final watch = results[index];
+              return GestureDetector(
+                onTap: () {
+                  Get.to(() => ToyDetailScreen(watch: watch));
+                },
+                child: WatchCard(watch: watch),
+              );
+            },
+          );
     });
-  }
-
-  Widget _buildSuggestionList(List<Product> suggestions) {
-    return ListView.separated(
-      itemCount: suggestions.length,
-      separatorBuilder: (_, __) => const Divider(),
-      itemBuilder: (context, index) {
-        final product = suggestions[index];
-        return ListTile(
-          title: Text(product.name),
-          onTap: () {
-            _searchController.text = product.name;
-            _onSearch(product.name);
-          },
-        );
-      },
-    );
   }
 
   Widget _buildDefaultSuggestions() {

@@ -5,7 +5,7 @@ import 'package:toyland_mobile/data/models/order_model.dart';
 import 'package:toyland_mobile/data/repositories/order/order_repository.dart';
 
 class OrderController extends GetxController {
-  final OrderRepository _repo = Get.find();
+  final OrderRepository _repo = OrderRepository();
   final RxBool isLoading = false.obs;
   final RxString error = ''.obs;
   var orders = <OrderModel>[].obs;

@@ -11,7 +11,7 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await GetStorage.init();
   Get.lazyPut(() => ApiService());
-  
+
   runApp(MyApp());
 }
 
@@ -24,7 +24,7 @@ class MyApp extends StatelessWidget {
       builder: (BuildContext context, Widget? child) {
         return GetMaterialApp(
           debugShowCheckedModeBanner: false,
-          initialRoute: RouterName.home,
+          initialRoute: RouterName.login,
           getPages: Pages.pages,
         );
       },

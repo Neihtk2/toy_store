@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:toyland_mobile/data/models/product_model.dart' hide Image;
-
+import 'package:toyland_mobile/data/models/watch_model.dart';
+import 'package:toyland_mobile/presentation/views/home/toy_item.dart';
+import 'package:toyland_mobile/presentation/views/toys/toys_detail.dart';
 
 class SearchResultsScreen extends StatelessWidget {
   final String searchQuery;
-  final RxList<Product> results;
+  final RxList<WatchModel> results;
 
   const SearchResultsScreen({
     required this.searchQuery,
@@ -18,25 +19,27 @@ class SearchResultsScreen extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(title: Text('Kết quả: "$searchQuery"')),
       body: Obx(() {
-        if (results.isEmpty) {
-          return const Center(child: Text("Không tìm thấy sản phẩm nào."));
-        }
-
-        return ListView.separated(
-          itemCount: results.length,
-          separatorBuilder: (_, __) => const Divider(),
-          itemBuilder: (context, index) {
-            final product = results[index];
-            return ListTile(
-              leading: Image.network(product.images!.url, width: 50, height: 50),
-              title: Text(product.name),
-              subtitle: Text(product.description ?? ''),
-              onTap: () {
-                // TODO: Navigate to product detail
+        return results.isEmpty
+            ? const Center(child: Text("Không tìm thấy sản phẩm nào."))
+            : GridView.builder(
+              padding: const EdgeInsets.all(10),
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                childAspectRatio: 0.7,
+                crossAxisSpacing: 9,
+                mainAxisSpacing: 8,
+              ),
+              itemCount: results.length,
+              itemBuilder: (context, index) {
+                final watch = results[index];
+                return GestureDetector(
+                  onTap: () {
+                    Get.to(() => ToyDetailScreen(watch: watch));
+                  },
+                  child: WatchCard(watch: watch),
+                );
               },
             );
-          },
-        );
       }),
     );
   }

@@ -23,18 +23,13 @@ class _ToyDetailScreenState extends State<ToyDetailScreen> {
   late double totalPrice;
   bool isLoading = false;
   late final CartController cartController;
-  late final CartRepository cartRepository;
+
   late final likeController = Get.put(LikeController());
 
   @override
   void initState() {
     super.initState();
     totalPrice = double.parse(widget.watch.price);
-
-    // Đăng ký CartRepository trước
-    cartRepository = Get.put(CartRepository());
-
-    // Sau đó mới đăng ký CartController
     cartController = Get.put(CartController());
     likeController.fetchFavoriteByProductId(widget.watch.id);
   }
@@ -184,7 +179,7 @@ class _ToyDetailScreenState extends State<ToyDetailScreen> {
         ),
         const SizedBox(height: 10),
         Text(
-          widget.watch.description??"",
+          widget.watch.description ?? "",
           style: const TextStyle(fontSize: 16, color: Colors.grey),
         ),
       ],
@@ -228,31 +223,27 @@ class _ToyDetailScreenState extends State<ToyDetailScreen> {
   }
 
   Widget _buildFavoriteButton(int productId) {
-  return Obx(() {
-    if (likeController.isLoading.value) {
-      return const SizedBox(
-        width: 24,
-        height: 24,
-        child: CircularProgressIndicator(strokeWidth: 2),
+    return Obx(() {
+      if (likeController.isLoading.value) {
+        return const SizedBox(
+          width: 24,
+          height: 24,
+          child: CircularProgressIndicator(strokeWidth: 2),
+        );
+      }
+
+      return IconButton(
+        icon: Icon(
+          likeController.isLiked.value ? Icons.favorite : Icons.favorite_border,
+          color: Colors.red,
+        ),
+        onPressed: () async {
+          await likeController.toggleLike(productId);
+          await likeController.fetchFavoriteByProductId(productId);
+        },
       );
-    }
-
-    return IconButton(
-      icon: Icon(
-        likeController.isLiked.value ? Icons.favorite : Icons.favorite_border,
-        color: Colors.red,
-      ),
-      onPressed: () async {
-        await likeController.toggleLike(productId);
-        await likeController.fetchFavoriteByProductId(productId);
-      },
-    );
-  });
-}
-
-
-
-
+    });
+  }
 
   Widget _buildQuantitySelector(int quantity, Function(int) onQuantityChanged) {
     return Row(
@@ -366,17 +357,8 @@ class _ToyDetailScreenState extends State<ToyDetailScreen> {
   // Hàm xử lý thêm vào giỏ hàng
   Future<void> _addToCart() async {
     setState(() => isLoading = true); // Bật loading
-
     try {
-      await cartRepository.postProducts(
-        widget.watch.id.toString(),
-        quantity.toString(),
-      );
-      Get.snackbar(
-        "Success",
-        "Thêm thành công!",
-        snackPosition: SnackPosition.BOTTOM,
-      );
+      await cartController.addCart(widget.watch.id, quantity);
     } catch (e) {
       Get.snackbar(
         "Error",

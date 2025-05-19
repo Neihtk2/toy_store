@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_keyboard_visibility/flutter_keyboard_visibility.dart';
 import 'package:get/get.dart';
+import 'package:toyland_mobile/presentation/controllers/checkout_controller.dart';
 import 'package:toyland_mobile/presentation/views/cart/cart_screen.dart';
 
 class CheckoutScreen extends StatefulWidget {
@@ -9,18 +10,14 @@ class CheckoutScreen extends StatefulWidget {
 }
 
 class _CheckoutScreenState extends State<CheckoutScreen> {
-  final TextEditingController addressController = TextEditingController();
-  final TextEditingController phoneController = TextEditingController();
-  final RxString paymentMethod = 'vnpay'.obs;
-  // double get subtotal => 1650.00;
-  // double get shipping => 40.90;
-  // double get total => 1690.99;
-  // double get delivery => 0;
+  final CheckoutController checkoutController = Get.put(CheckoutController());
+  final RxString paymentMethod = 'COD'.obs;
+  final GlobalKey<CheckoutFormState> _formKey = GlobalKey<CheckoutFormState>();
   late KeyboardVisibilityController _keyboardVisibilityController;
   bool _isKeyboardVisible = false;
+
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     _keyboardVisibilityController = KeyboardVisibilityController();
     _keyboardVisibilityController.onChange.listen((bool visible) {
@@ -32,11 +29,12 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final arguments = Get.arguments as Map<String, dynamic>;
-    double subtotal = arguments['subtotal'];
-    double shipping = arguments['shipping'];
-    double total = arguments['total'];
-    double delivery = arguments['delivery'];
+    final arguments = Get.arguments as Map<String, dynamic>? ?? {};
+    double subtotal = arguments['subtotal'] ?? 100000;
+    double shipping = arguments['shipping'] ?? 20000;
+    double delivery = arguments['delivery'] ?? 0;
+    double total = arguments['total'] ?? (subtotal + shipping + delivery);
+
     return Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: Colors.grey[50],
@@ -45,9 +43,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () {
-            Get.back();
-          },
+          onPressed: () => Get.back(),
           style: IconButton.styleFrom(backgroundColor: Colors.white),
         ),
         title: const Text(
@@ -60,17 +56,20 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
         ),
       ),
       body: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Expanded(child: CheckoutForm()),
+          Expanded(
+            child: CheckoutForm(
+              key: _formKey,
+              onPaymentMethodChanged: (method) {
+                paymentMethod.value = method;
+              },
+            ),
+          ),
           if (!_isKeyboardVisible)
             Container(
               height: MediaQuery.of(context).size.height * 0.35,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.only(
-                  topLeft: Radius.circular(25),
-                  topRight: Radius.circular(25),
-                ),
+              decoration: const BoxDecoration(
+                borderRadius: BorderRadius.vertical(top: Radius.circular(25)),
                 color: Colors.white,
               ),
               child: Column(
@@ -79,27 +78,57 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                   OrderSummary(
                     subtotal: subtotal,
                     shipping: shipping,
-                    total: total,
                     delivery: delivery,
+                    total: total,
                   ),
-                  Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: ElevatedButton(
-                      onPressed: () {},
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFF4795DE),
-                        minimumSize: const Size(double.infinity, 50),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(25),
+                  Obx(
+                    () => Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: ElevatedButton(
+                        onPressed:
+                            checkoutController.isLoading.value
+                                ? null
+                                : () {
+                                  if (_formKey.currentState != null &&
+                                      _formKey.currentState!
+                                          .validateAndGetData()) {
+                                    final data =
+                                        _formKey.currentState!.formData;
+                                    if (paymentMethod.value == 'COD') {
+                                      checkoutController.checkout(
+                                        data['phone'],
+                                        data['receiver'],
+                                        data['address'],
+                                        data['note'] ?? '',
+                                      );
+                                    } else {
+                                      checkoutController.checkoutWithVNPay(
+                                        data['phone'],
+                                        data['receiver'],
+                                        data['address'],
+                                        data['note'] ?? '',
+                                      );
+                                    }
+                                  }
+                                },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: const Color(0xFF4795DE),
+                          minimumSize: const Size(double.infinity, 50),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(25),
+                          ),
                         ),
-                      ),
-                      child: const Text(
-                        'Thanh Toán',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.white,
-                        ),
+                        child:
+                            checkoutController.isLoading.value
+                                ? Center(child: CircularProgressIndicator())
+                                : const Text(
+                                  'Thanh Toán',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.w600,
+                                    color: Colors.white,
+                                  ),
+                                ),
                       ),
                     ),
                   ),
@@ -113,274 +142,217 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
 }
 
 class CheckoutForm extends StatefulWidget {
-  const CheckoutForm({Key? key}) : super(key: key);
+  final Function(String) onPaymentMethodChanged;
+
+  const CheckoutForm({Key? key, required this.onPaymentMethodChanged})
+    : super(key: key);
 
   @override
-  State<CheckoutForm> createState() => _CheckoutFormState();
+  State<CheckoutForm> createState() => CheckoutFormState();
 }
 
-class _CheckoutFormState extends State<CheckoutForm> {
+class CheckoutFormState extends State<CheckoutForm> {
   final _formKey = GlobalKey<FormState>();
-
-  // Để điều khiển trạng thái mở rộng của các mục
+  final Map<String, dynamic> formData = {};
   bool _isContactInfoExpanded = true;
   bool _isDeliveryMethodExpanded = false;
   bool _isPaymentMethodExpanded = false;
+
   late TextEditingController _nameController;
-  late TextEditingController _andressController;
   late TextEditingController _phoneController;
-  // Lưu trữ dữ liệu form
-  // String _name = '';
-  // String _phoneNumber = '';
-  // String _address = '';
+  late TextEditingController _addressController;
+  late TextEditingController _noteController;
+
   String _deliveryMethod = 'SAME_DAY';
   String _paymentMethod = 'COD';
+
+  @override
+  void initState() {
+    super.initState();
+    _nameController = TextEditingController();
+    _phoneController = TextEditingController();
+    _addressController = TextEditingController();
+    _noteController = TextEditingController();
+  }
 
   @override
   void dispose() {
     _nameController.dispose();
     _phoneController.dispose();
-    _andressController.dispose();
+    _addressController.dispose();
+    _noteController.dispose();
     super.dispose();
   }
 
-  void initState() {
-    _nameController = TextEditingController();
-    _phoneController = TextEditingController();
-    _andressController = TextEditingController();
-    super.initState();
+  bool validateAndGetData() {
+    if (_formKey.currentState!.validate()) {
+      formData['receiver'] = _nameController.text.trim();
+      formData['phone'] = _phoneController.text.trim();
+      formData['address'] = _addressController.text.trim();
+      formData['note'] =
+          _noteController.text.trim().isEmpty
+              ? null
+              : _noteController.text.trim();
+      formData['deliveryMethod'] = _deliveryMethod;
+      formData['paymentMethod'] = _paymentMethod;
+      return true;
+    }
+    return false;
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.grey[50],
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            children: [
-              // 1. Contact Information
-              Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.all(Radius.circular(10)),
-                  color: Colors.white,
-                  border: Border.all(color: Colors.grey[300] ?? Colors.grey),
-                ),
-                padding: const EdgeInsets.all(4),
-                child: Theme(
-                  data: Theme.of(
-                    context,
-                  ).copyWith(dividerColor: Colors.transparent),
-                  child: ExpansionTile(
-                    initiallyExpanded: _isContactInfoExpanded,
-                    title: const Text(
-                      '1. Thông tin liên hệ',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    onExpansionChanged: (expanded) {
-                      setState(() {
-                        _isContactInfoExpanded = expanded;
-                      });
-                    },
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 8,
-                        ),
-                        child: Column(
-                          children: [
-                            TextField(
-                              controller: _nameController,
-                              decoration: InputDecoration(
-                                labelText: 'Tên người nhận',
-                                border: OutlineInputBorder(
-                                  borderSide: BorderSide(
-                                    color: Colors.grey[300] ?? Colors.grey,
-                                  ),
-                                ),
-                                labelStyle: TextStyle(color: Colors.grey),
-                              ),
-                            ),
-                            const SizedBox(height: 16),
-                            TextField(
-                              controller: _phoneController,
-                              decoration: InputDecoration(
-                                labelText: 'Số điện thoại người nhận',
-                                labelStyle: TextStyle(color: Colors.grey),
-                                border: OutlineInputBorder(),
-                              ),
-                            ),
-                            const SizedBox(height: 16),
-                            TextField(
-                              controller: _andressController,
-                              decoration: InputDecoration(
-                                labelText: 'Địa chỉ người nhận',
-                                labelStyle: TextStyle(color: Colors.grey),
-                                border: OutlineInputBorder(),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
+    return SingleChildScrollView(
+      padding: const EdgeInsets.all(16),
+      child: Form(
+        key: _formKey,
+        child: Column(
+          children: [
+            buildExpansionTile(
+              title: '1. Thông tin liên hệ',
+              initiallyExpanded: _isContactInfoExpanded,
+              onExpansionChanged:
+                  (expanded) =>
+                      setState(() => _isContactInfoExpanded = expanded),
+              child: Column(
+                children: [
+                  buildTextField(
+                    controller: _nameController,
+                    label: 'Tên người nhận',
+                    validatorMsg: 'Vui lòng nhập tên người nhận',
                   ),
-                ),
-              ),
-              SizedBox(height: 8),
-              // 2. Delivery Method
-              Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.all(Radius.circular(10)),
-                  color: Colors.white,
-                  border: Border.all(color: Colors.grey[300] ?? Colors.grey),
-                ),
-                padding: const EdgeInsets.all(4),
-                child: Theme(
-                  data: Theme.of(
-                    context,
-                  ).copyWith(dividerColor: Colors.transparent),
-                  child: ExpansionTile(
-                    initiallyExpanded: _isDeliveryMethodExpanded,
-                    title: const Text(
-                      '2. Phương thức giao hàng',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    onExpansionChanged: (expanded) {
-                      setState(() {
-                        _isDeliveryMethodExpanded = expanded;
-                      });
-                    },
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 8,
-                        ),
-                        child: Wrap(
-                          spacing: 8,
-                          children: [
-                            ChoiceChip(
-                              label: const Text('SAME_DAY'),
-                              selected: _deliveryMethod == 'SAME_DAY',
-                              onSelected: (bool selected) {
-                                setState(() {
-                                  _deliveryMethod = 'SAME_DAY';
-                                });
-                              },
-                            ),
-                            ChoiceChip(
-                              label: const Text('EXPRESS'),
-                              selected: _deliveryMethod == 'EXPRESS',
-                              onSelected: (bool selected) {
-                                setState(() {
-                                  _deliveryMethod = 'EXPRESS';
-                                });
-                              },
-                            ),
-                            ChoiceChip(
-                              label: const Text('NORMAL'),
-                              selected: _deliveryMethod == 'NORMAL',
-                              onSelected: (bool selected) {
-                                setState(() {
-                                  _deliveryMethod = 'NORMAL';
-                                });
-                              },
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
+                  const SizedBox(height: 16),
+                  buildTextField(
+                    controller: _phoneController,
+                    label: 'Số điện thoại người nhận',
+                    validatorMsg: 'Vui lòng nhập số điện thoại',
+                    keyboardType: TextInputType.phone,
                   ),
-                ),
-              ),
-              SizedBox(height: 8),
-              // 3. Payment Method
-              Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.all(Radius.circular(10)),
-                  color: Colors.white,
-                  border: Border.all(color: Colors.grey[300] ?? Colors.grey),
-                ),
-                padding: const EdgeInsets.all(4),
-                child: Theme(
-                  data: Theme.of(
-                    context,
-                  ).copyWith(dividerColor: Colors.transparent),
-                  child: ExpansionTile(
-                    initiallyExpanded: _isPaymentMethodExpanded,
-                    title: const Text(
-                      '3. Phương thức thanh toán',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    onExpansionChanged: (expanded) {
-                      setState(() {
-                        _isPaymentMethodExpanded = expanded;
-                      });
-                    },
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 8,
-                        ),
-                        child: Row(
-                          children: [
-                            Expanded(
-                              child: ElevatedButton(
-                                onPressed: () {
-                                  setState(() {
-                                    _paymentMethod = 'COD';
-                                  });
-                                },
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor:
-                                      _paymentMethod == 'COD'
-                                          ? Colors.blue
-                                          : Colors.grey,
-                                ),
-                                child: const Text('COD'),
-                              ),
-                            ),
-                            const SizedBox(width: 16),
-                            Expanded(
-                              child: ElevatedButton(
-                                onPressed: () {
-                                  setState(() {
-                                    _paymentMethod = 'NCB';
-                                  });
-                                },
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor:
-                                      _paymentMethod == 'NCB'
-                                          ? Colors.blue
-                                          : Colors.grey,
-                                ),
-                                child: const Text('NCB'),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
+                  const SizedBox(height: 16),
+                  buildTextField(
+                    controller: _addressController,
+                    label: 'Địa chỉ người nhận',
+                    validatorMsg: 'Vui lòng nhập địa chỉ',
                   ),
-                ),
+                  const SizedBox(height: 16),
+                  buildTextField(
+                    controller: _noteController,
+                    label: 'Ghi chú (tuỳ chọn)',
+                    validator: null,
+                  ),
+                ],
               ),
-            ],
-          ),
+            ),
+            const SizedBox(height: 8),
+            buildExpansionTile(
+              title: '2. Phương thức giao hàng',
+              initiallyExpanded: _isDeliveryMethodExpanded,
+              onExpansionChanged:
+                  (expanded) =>
+                      setState(() => _isDeliveryMethodExpanded = expanded),
+              child: Wrap(
+                spacing: 8,
+                children:
+                    ['SAME_DAY', 'EXPRESS', 'NORMAL'].map((type) {
+                      return ChoiceChip(
+                        label: Text(type),
+                        selected: _deliveryMethod == type,
+                        onSelected: (_) {
+                          setState(() => _deliveryMethod = type);
+                        },
+                      );
+                    }).toList(),
+              ),
+            ),
+            const SizedBox(height: 8),
+            buildExpansionTile(
+              title: '3. Phương thức thanh toán',
+              initiallyExpanded: _isPaymentMethodExpanded,
+              onExpansionChanged:
+                  (expanded) =>
+                      setState(() => _isPaymentMethodExpanded = expanded),
+              child: Row(
+                children: [
+                  buildPaymentButton('COD', 'COD'),
+                  const SizedBox(width: 16),
+                  buildPaymentButton('VNPAY', 'NCB'),
+                ],
+              ),
+            ),
+          ],
         ),
       ),
     );
   }
+
+  Widget buildExpansionTile({
+    required String title,
+    required bool initiallyExpanded,
+    required Function(bool) onExpansionChanged,
+    required Widget child,
+  }) {
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(10),
+        color: Colors.white,
+        border: Border.all(color: Colors.grey[300]!),
+      ),
+      padding: const EdgeInsets.all(4),
+      child: Theme(
+        data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
+        child: ExpansionTile(
+          initiallyExpanded: initiallyExpanded,
+          title: Text(
+            title,
+            style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+          ),
+          onExpansionChanged: onExpansionChanged,
+          children: [Padding(padding: const EdgeInsets.all(12), child: child)],
+        ),
+      ),
+    );
+  }
+
+  Widget buildTextField({
+    required TextEditingController controller,
+    required String label,
+    String? validatorMsg,
+    TextInputType keyboardType = TextInputType.text,
+    String? Function(String?)? validator,
+  }) {
+    return TextFormField(
+      controller: controller,
+      keyboardType: keyboardType,
+      validator:
+          validator ??
+          (validatorMsg != null
+              ? (value) =>
+                  value == null || value.trim().isEmpty ? validatorMsg : null
+              : null),
+      decoration: InputDecoration(
+        labelText: label,
+        labelStyle: const TextStyle(color: Colors.grey),
+        border: const OutlineInputBorder(),
+      ),
+    );
+  }
+
+  Widget buildPaymentButton(String label, String value) {
+    return Expanded(
+      child: ElevatedButton(
+        onPressed: () {
+          setState(() {
+            _paymentMethod = value;
+            widget.onPaymentMethodChanged(value);
+          });
+        },
+        style: ElevatedButton.styleFrom(
+          backgroundColor: _paymentMethod == value ? Colors.blue : Colors.grey,
+        ),
+        child: Text(label),
+      ),
+    );
+  }
 }
+
+// Giả lập widget OrderSummary

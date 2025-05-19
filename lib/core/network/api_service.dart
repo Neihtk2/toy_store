@@ -18,37 +18,39 @@ class ApiService extends Get.GetxService {
     );
   }
 
-  Future<Response> addProduct(String id, String amount,String token) async {
-    return await dio.post(
-      Endpoints.addProducts,
-      data: {
-        "products": [
-          {"id": id, "amount": amount},
-        ],
-      },
-      options: Options(
-        headers: {
-          'Authorization': 'Bearer $token', // Truyền token vào header
-        },
-      ),
-    );
-  }
+  // Future<Response> addProduct(String id, String amount,String token) async {
+  //   return await dio.post(
+  //     Endpoints.addProducts,
+  //     data: {
+  //       "products": [
+  //         {"id": id, "amount": amount},
+  //       ],
+  //     },
+  //     options: Options(
+  //       headers: {
+  //         'Authorization': 'Bearer $token', // Truyền token vào header
+  //       },
+  //     ),
+  //   );
+  // }
 
-  Future<Response> registerApp(
-    String name,
-    String email,
-    String password,
-    String gender,
-    String address,
-  ) async {
+  Future<Response> registerApp({
+    required String name,
+    required String email,
+    required String password,
+    required String address,
+    required String gender,
+    // required String date,
+  }) async {
     return await dio.post(
       Endpoints.register,
       data: {
         'username': name,
         'email': email,
         'password': password,
-        'gender': gender,
         'address': address,
+        'gender': gender,
+        // 'birth': date,
       },
     );
   }
@@ -62,7 +64,6 @@ class ApiService extends Get.GetxService {
         },
       ),
     );
-
   }
 
   Future<Response> getMe(String token) async {
@@ -75,7 +76,8 @@ class ApiService extends Get.GetxService {
       ),
     );
   }
-   Future<Response> getOrder(String token) async {
+
+  Future<Response> getOrder(String token) async {
     return await dio.get(
       Endpoints.getOrder,
       options: Options(
@@ -85,7 +87,6 @@ class ApiService extends Get.GetxService {
       ),
     );
   }
-  
 
   Future<Response> getProducts(String token) async {
     return await dio.get(

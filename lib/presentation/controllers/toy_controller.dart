@@ -1,14 +1,14 @@
 import 'package:dio/dio.dart';
 import 'package:get/get.dart';
 import 'package:toyland_mobile/data/models/product_model.dart';
+import 'package:toyland_mobile/data/models/watch_model.dart';
 import 'package:toyland_mobile/data/repositories/watch/toy_responsitory.dart';
-
 
 class ToysController extends GetxController {
   final ToyReponsitoryImpl _repo = ToyReponsitoryImpl.instance;
   final RxBool isLoading = false.obs;
   final RxString error = ''.obs;
-  final RxList<Product> allProduct = <Product>[].obs;
+  final RxList<WatchModel> allProduct = <WatchModel>[].obs;
 
   @override
   void onInit() {

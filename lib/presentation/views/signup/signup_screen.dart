@@ -1,17 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:get/get.dart';
+import 'package:get/get.dart' hide FormData;
+import 'package:get/get_connect/http/src/utils/utils.dart';
+
 import 'package:toyland_mobile/presentation/controllers/auth_controller.dart';
+import 'package:toyland_mobile/routes/router_name.dart';
 import 'package:toyland_mobile/x_res/app_themes.dart';
+import 'package:intl/intl.dart';
+import 'package:dio/dio.dart';
 
 class SignupScreen extends GetView<AuthController> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _confirmPasswordController =
+      TextEditingController();
   final TextEditingController _nameController = TextEditingController();
-
   final TextEditingController _addressController = TextEditingController();
-  RxString selectedGender = 'Male'.obs;
-
+  final TextEditingController _dobController = TextEditingController();
+  RxString selectedGender = 'male'.obs;
 
   @override
   Widget build(BuildContext context) {
@@ -52,8 +58,14 @@ class SignupScreen extends GetView<AuthController> {
               _buildTextField("Mật khẩu"),
               _buildPasswordField(),
               SizedBox(height: 10.h),
+              _buildTextField("Nhập lại mật khẩu"),
+              _buildConfirmPasswordField(),
+              SizedBox(height: 10.h),
               _buildTextField("Địa chỉ"),
               _buildAddressField(),
+              SizedBox(height: 10.h),
+              _buildTextField("Ngày sinh"),
+              _buildDateOfBirthField(context),
               SizedBox(height: 10.h),
               _buildTextField("Giới tính"),
               _buildGenderSelection(),
@@ -71,11 +83,11 @@ class SignupScreen extends GetView<AuthController> {
       () => Row(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          _buildRadioButton("Male"),
+          _buildRadioButton("male"),
           SizedBox(width: 10),
-          _buildRadioButton("Female"),
+          _buildRadioButton("female"),
           SizedBox(width: 10),
-          _buildRadioButton("Other"),
+          _buildRadioButton("other"),
         ],
       ),
     );
@@ -136,7 +148,7 @@ class SignupScreen extends GetView<AuthController> {
         filled: true,
         contentPadding: EdgeInsets.symmetric(vertical: 20.h, horizontal: 20.w),
         fillColor: Colors.grey[100],
-        hintText: 'Address',
+        hintText: 'Địa chỉ',
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(30.r),
           borderSide: BorderSide.none,
@@ -152,7 +164,7 @@ class SignupScreen extends GetView<AuthController> {
         filled: true,
         contentPadding: EdgeInsets.symmetric(vertical: 20.h, horizontal: 20.w),
         fillColor: Colors.grey[100],
-        hintText: 'Name',
+        hintText: 'Tên',
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(30.r),
           borderSide: BorderSide.none,
@@ -173,7 +185,7 @@ class SignupScreen extends GetView<AuthController> {
             horizontal: 20.w,
           ),
           fillColor: Colors.grey[100],
-          hintText: 'Password',
+          hintText: 'Mật khẩu',
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(30.r),
             borderSide: BorderSide.none,
@@ -194,20 +206,131 @@ class SignupScreen extends GetView<AuthController> {
     );
   }
 
+  Widget _buildConfirmPasswordField() {
+    return Obx(
+      () => TextField(
+        controller: _confirmPasswordController,
+        obscureText: controller.isPasswordHidden.value,
+        decoration: InputDecoration(
+          filled: true,
+          contentPadding: EdgeInsets.symmetric(
+            vertical: 20.h,
+            horizontal: 20.w,
+          ),
+          fillColor: Colors.grey[100],
+          hintText: 'Nhập lại mật khẩu',
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(30.r),
+            borderSide: BorderSide.none,
+          ),
+          suffixIcon: IconButton(
+            icon: Icon(
+              controller.isPasswordHidden.value
+                  ? Icons.visibility_off
+                  : Icons.visibility,
+            ),
+            onPressed: () {
+              controller.isPasswordHidden.value =
+                  !controller.isPasswordHidden.value;
+            },
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDateOfBirthField(BuildContext context) {
+    return TextField(
+      controller: _dobController,
+      readOnly: true,
+      onTap: () async {
+        DateTime? pickedDate = await showDatePicker(
+          context: context,
+          initialDate: DateTime(2000),
+          firstDate: DateTime(1900),
+          lastDate: DateTime.now(),
+        );
+        if (pickedDate != null) {
+          _dobController.text =
+              "${pickedDate.day}/${pickedDate.month}/${pickedDate.year}";
+        }
+      },
+      decoration: InputDecoration(
+        filled: true,
+        contentPadding: EdgeInsets.symmetric(vertical: 20.h, horizontal: 20.w),
+        fillColor: Colors.grey[100],
+        hintText: 'Chọn ngày sinh',
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(30.r),
+          borderSide: BorderSide.none,
+        ),
+        suffixIcon: Icon(Icons.calendar_today),
+      ),
+    );
+  }
+
+  Future<void> registerUser() async {
+    Dio dio = Dio();
+    DateTime? parsedDob;
+    try {
+      parsedDob = DateFormat("dd/MM/yyyy").parse(_dobController.text.trim());
+    } catch (e) {
+      Get.snackbar("Lỗi", "Ngày sinh không hợp lệ");
+      return;
+    }
+
+    final formattedDob = DateFormat("yyyy-MM-dd").format(parsedDob);
+
+    FormData formData = FormData.fromMap({
+      'username': _nameController.text.trim(),
+      'email': _emailController.text.trim(),
+      'password': _passwordController.text.trim(),
+      'gender': selectedGender.value.trim(),
+      'address': _addressController.text.trim(),
+      'birth': formattedDob,
+    });
+
+    try {
+      controller.isLoading.value = true;
+      final response = await dio.post(
+        'http://103.155.161.56:3100/api/v1/auth/sign-up',
+        data: formData,
+        options: Options(contentType: 'multipart/form-data'),
+      );
+      Get.snackbar(
+        "Thành công",
+        "Đăng ký thành công!",
+        backgroundColor: Colors.green,
+        colorText: Colors.white,
+      );
+      Get.offAllNamed(RouterName.login);
+    } catch (e) {
+      print('Error: $e');
+    } finally {
+      controller.isLoading.value = false;
+    }
+  }
+
   Widget _buildSignUpButton() {
     return Obx(
       () => InkWell(
+        onTap:
+            controller.isLoading.value
+                ? null
+                : () async {
+                  if (_passwordController.text !=
+                      _confirmPasswordController.text) {
+                    Get.snackbar(
+                      "Lỗi",
+                      "Mật khẩu không khớp!",
+                      backgroundColor: Colors.redAccent,
+                      colorText: Colors.white,
+                    );
+                    return;
+                  }
 
-        onTap: controller.isLoading.value
-            ? null
-            : () => controller.register(
-                _nameController.text.trim(),
-                _emailController.text.trim(),
-                _passwordController.text.trim(),
-                _addressController.text.trim(),
-                selectedGender.value.trim(),
-              ),
-
+                  await registerUser();
+                },
         child: Container(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(30.r),
@@ -215,18 +338,23 @@ class SignupScreen extends GetView<AuthController> {
           ),
           height: 60.h,
           width: double.infinity,
-          child: controller.isLoading.value
-              ? const CircularProgressIndicator()
-              : Center(
-                  child: Text(
-                    'ĐĂNG KÝ',
-                    style: TextStyle(
-                      fontSize: 20.sp,
-                      fontWeight: FontWeight.w700,
-                      color: Colors.white,
+          child:
+              controller.isLoading.value
+                  ? const Center(
+                    child: CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                    ),
+                  )
+                  : Center(
+                    child: Text(
+                      'ĐĂNG KÝ',
+                      style: TextStyle(
+                        fontSize: 20.sp,
+                        fontWeight: FontWeight.w700,
+                        color: Colors.white,
+                      ),
                     ),
                   ),
-                ),
         ),
       ),
     );

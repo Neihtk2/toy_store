@@ -70,8 +70,10 @@ class _CartScreenState extends State<CartScreen> {
                     onRemove: () {
                       setState(() {
                         cartController.filteredCartItem.removeAt(index);
+                        cartController.removeFromCart(item.productId);
                       });
                     },
+                    amount: item.amount,
                   );
                 },
               ),
@@ -136,26 +138,38 @@ class _CartScreenState extends State<CartScreen> {
 }
 
 class CartItemWidget extends StatelessWidget {
+  final CartController cartController = Get.find<CartController>();
   final CartItem item;
   final Function(int) onQuantityChanged;
   final VoidCallback onRemove;
-  const CartItemWidget({
+  final RxInt amount;
+
+  CartItemWidget({
     Key? key,
     required this.item,
     required this.onQuantityChanged,
     required this.onRemove,
-  }) : super(key: key);
+    required int amount,
+  }) : amount = amount.obs,
+       super(key: key);
+
+  void updateQuantity(bool isIncrease) {
+    int newAmount = isIncrease ? amount.value + 1 : amount.value - 1;
+    if (newAmount >= 1) {
+      amount.value = newAmount;
+      onQuantityChanged(newAmount);
+      cartController.addCart(item.productId, newAmount);
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
-      //height: 160,
-      width: double.infinity,
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          // Shoe icon/image
+          // Ảnh sản phẩm
           Container(
             width: 100,
             height: 160,
@@ -166,10 +180,9 @@ class CartItemWidget extends StatelessWidget {
             child: Image.network(item.imageUrl, fit: BoxFit.cover),
           ),
           const SizedBox(width: 16),
-          // Item details
+          // Thông tin sản phẩm
           Expanded(
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
@@ -181,60 +194,58 @@ class CartItemWidget extends StatelessWidget {
                   ),
                 ),
                 Text(
-                  '\$${item.price.toStringAsFixed(2)}',
+                  '${item.price.toStringAsFixed(2)} VNĐ',
                   style: const TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 14,
                     color: Colors.black,
                   ),
                 ),
+                const SizedBox(height: 8),
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
                   children: [
                     IconButton(
-                      onPressed: () {
-                        if (item.amount > 1) {
-                          onQuantityChanged(item.amount - 1);
-                        }
-                      },
-                      icon: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Icon(Icons.remove, color: Colors.grey, size: 16),
+                      onPressed: () => updateQuantity(false),
+                      icon: const Icon(
+                        Icons.remove,
+                        color: Colors.grey,
+                        size: 16,
                       ),
                       style: IconButton.styleFrom(
                         backgroundColor: Colors.white,
                         padding: EdgeInsets.zero,
-                        tapTargetSize:
-                            MaterialTapTargetSize.shrinkWrap, // 🔥 Tắt padding
+                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                       ),
-                      constraints: BoxConstraints(),
+                      constraints: const BoxConstraints(),
                     ),
                     const SizedBox(width: 10),
-                    Text(
-                      '${item.amount}',
-                      style: const TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 16,
+                    Obx(
+                      () => Text(
+                        '${amount.value}',
+                        style: const TextStyle(
+                          fontWeight: FontWeight.w600,
+                          fontSize: 16,
+                        ),
                       ),
                     ),
                     const SizedBox(width: 10),
                     IconButton(
                       onPressed: () {
-                        onQuantityChanged(item.amount + 1);
+                        amount.value++;
+                        onQuantityChanged(amount.value);
+                        cartController.addCart(item.productId, amount.value);
                       },
                       icon: const Icon(
                         Icons.add_circle,
                         color: Color(0xFF4795DE),
                         size: 32,
                       ),
-
                       style: IconButton.styleFrom(
                         backgroundColor: Colors.white,
                         padding: EdgeInsets.zero,
-                        tapTargetSize:
-                            MaterialTapTargetSize.shrinkWrap, // 🔥 Tắt padding
+                        tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                       ),
-                      constraints: BoxConstraints(),
+                      constraints: const BoxConstraints(),
                     ),
                   ],
                 ),
@@ -242,25 +253,12 @@ class CartItemWidget extends StatelessWidget {
             ),
           ),
           const SizedBox(width: 16),
+
           Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                decoration: BoxDecoration(
-                  color: Colors.grey.withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(4),
-                ),
-                child: Text(
-                  item.productId.toString(),
-                  style: const TextStyle(
-                    fontWeight: FontWeight.w500,
-                    fontSize: 12,
-                  ),
-                ),
-              ),
               IconButton(
-                constraints: BoxConstraints(),
+                constraints: const BoxConstraints(),
                 icon: const Icon(Icons.delete_outline, color: Colors.red),
                 style: IconButton.styleFrom(
                   tapTargetSize: MaterialTapTargetSize.shrinkWrap,
@@ -302,7 +300,7 @@ class OrderSummary extends StatelessWidget {
                 style: TextStyle(color: Colors.grey, fontSize: 16),
               ),
               Text(
-                '\$${formartted(subtotal)}',
+                '${formartted(subtotal)} VNĐ',
                 style: const TextStyle(
                   fontWeight: FontWeight.w600,
                   fontSize: 16,
@@ -319,7 +317,7 @@ class OrderSummary extends StatelessWidget {
                 style: TextStyle(color: Colors.grey, fontSize: 16),
               ),
               Text(
-                '\$${formartted(shipping)}',
+                '${formartted(shipping)} VNĐ',
                 style: const TextStyle(
                   fontWeight: FontWeight.w600,
                   fontSize: 16,
@@ -336,7 +334,7 @@ class OrderSummary extends StatelessWidget {
                 style: TextStyle(color: Colors.grey, fontSize: 16),
               ),
               Text(
-                '\$${formartted(delivery)}',
+                '${formartted(delivery)} VNĐ',
                 style: const TextStyle(
                   fontWeight: FontWeight.w600,
                   fontSize: 16,
@@ -357,7 +355,7 @@ class OrderSummary extends StatelessWidget {
                 ),
               ),
               Text(
-                '\$${formartted(total)}',
+                '${formartted(total)} VNĐ',
                 style: const TextStyle(
                   fontWeight: FontWeight.bold,
                   fontSize: 18,

@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
+import 'package:toyland_mobile/core/constants/config.dart';
 import 'package:toyland_mobile/presentation/controllers/user_controller.dart';
 import 'package:toyland_mobile/presentation/views/profile/edit_profile.dart';
+import 'package:toyland_mobile/routes/router_name.dart';
 
 class ProfileScreen extends StatelessWidget {
   ProfileScreen({Key? key}) : super(key: key) {
-     Get.put(UserController()); // 🔥 Đăng ký tại đây (không tối ưu)
+    Get.put(UserController()); // 🔥 Đăng ký tại đây (không tối ưu)
   }
 
   @override
@@ -15,16 +18,13 @@ class ProfileScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: const Color(0xFFF8F9FA),
       appBar: AppBar(
-        automaticallyImplyLeading: false, 
+        automaticallyImplyLeading: false,
         backgroundColor: const Color(0xFFF8F9FA),
         elevation: 0,
         centerTitle: false,
         title: const Text(
           "Trang cá nhân",
-          style: TextStyle(
-            color: Colors.black,
-            fontWeight: FontWeight.bold,
-          ),
+          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
         ),
         actions: [
           IconButton(
@@ -51,57 +51,103 @@ class ProfileScreen extends StatelessWidget {
             ),
           );
         }
-// Debug API
 
-        return SingleChildScrollView(
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            children: [
-              // Ảnh đại diện
-              Center(
-                child: Stack(
-                  children: [
-                    const CircleAvatar(
-                      radius: 50,
-                      child: Icon(Icons.person, size: 40),
-                    ),
-                    Positioned(
-                      bottom: 0,
-                      right: 0,
-                      child: Container(
-                        decoration: const BoxDecoration(
-                          color: Colors.blue,
-                          shape: BoxShape.circle,
-                        ),
-                        padding: const EdgeInsets.all(5),
-                        child: const Icon(
-                          Icons.camera_alt,
-                          color: Colors.white,
-                          size: 18,
+        return LayoutBuilder(
+          builder: (context, constraints) {
+            return SingleChildScrollView(
+              child: ConstrainedBox(
+                constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                child: IntrinsicHeight(
+                  child: Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(20),
+                        child: Column(
+                          children: [
+                            // Ảnh đại diện
+                            Center(
+                              child: Stack(
+                                children: [
+                                  const CircleAvatar(
+                                    radius: 50,
+                                    child: Icon(Icons.person, size: 40),
+                                  ),
+                                  Positioned(
+                                    bottom: 0,
+                                    right: 0,
+                                    child: Container(
+                                      decoration: const BoxDecoration(
+                                        color: Colors.blue,
+                                        shape: BoxShape.circle,
+                                      ),
+                                      padding: const EdgeInsets.all(5),
+                                      child: const Icon(
+                                        Icons.camera_alt,
+                                        color: Colors.white,
+                                        size: 18,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            const SizedBox(height: 10),
+                            // Tên người dùng
+                            Text(
+                              user.username?.isNotEmpty == true
+                                  ? user.username!
+                                  : "Chưa có tên",
+                              style: const TextStyle(
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black,
+                              ),
+                            ),
+                            const SizedBox(height: 20),
+                            // Các trường
+                            _buildProfileField(
+                              "Tên",
+                              user.username ?? "Chưa có tên",
+                            ),
+                            _buildProfileField(
+                              "Địa chỉ email",
+                              user.email ?? "Chưa có email",
+                            ),
+                          ],
                         ),
                       ),
-                    ),
-                  ],
+                      const Spacer(), // đẩy nút xuống
+                      Padding(
+                        padding: const EdgeInsets.all(20),
+                        child: ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.red,
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 50,
+                              vertical: 15,
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            minimumSize: const Size(double.infinity, 50),
+                          ),
+                          onPressed: () {
+                            GetStorage().remove(MyConfig.USER_ID);
+                            GetStorage().remove(MyConfig.ACCESS_TOKEN);
+                            Get.offAllNamed(RouterName.login);
+                          },
+                          child: const Text(
+                            "Đăng xuất",
+                            style: TextStyle(color: Colors.white),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
-              const SizedBox(height: 10),
-
-              // Tên người dùng
-              Text(
-                user.username?.isNotEmpty == true ? user.username! : "Chưa có tên",
-                style: const TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
-                ),
-              ),
-              const SizedBox(height: 20),
-
-              // Các trường thông tin người dùng
-              _buildProfileField("Tên", user.username ?? "Chưa có tên"),
-              _buildProfileField("Địa chỉ email ", user.email ?? "Chưa có email"),
-            ],
-          ),
+            );
+          },
         );
       }),
     );
@@ -111,10 +157,7 @@ class ProfileScreen extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          label,
-          style: const TextStyle(fontSize: 14, color: Colors.grey),
-        ),
+        Text(label, style: const TextStyle(fontSize: 14, color: Colors.grey)),
         const SizedBox(height: 5),
         TextFormField(
           initialValue: value,

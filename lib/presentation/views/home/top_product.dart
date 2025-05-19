@@ -21,7 +21,6 @@ class PopularToysScreen extends StatelessWidget {
         backgroundColor: const Color(0xFFF8F9FA),
       ),
       body: _buildGridList(),
-      
     );
   }
 
@@ -34,12 +33,6 @@ class PopularToysScreen extends StatelessWidget {
       }
 
       return GridView.builder(
-        // gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        //   crossAxisCount: 2, // 2 cột
-        //   crossAxisSpacing: 10, // Khoảng cách giữa các cột
-        //   mainAxisSpacing: 10, // Khoảng cách giữa các hàng
-        //   childAspectRatio: 0.75, // Tỉ lệ khung hình, chỉnh sửa nếu cần
-        // ),
         padding: EdgeInsets.all(10),
         gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
           crossAxisCount: 2,
@@ -52,7 +45,9 @@ class PopularToysScreen extends StatelessWidget {
           final watch = productController.filteredProductItem[index];
           return GestureDetector(
             onTap: () {
-               Get.to(() => ToyDetailScreen(watch: watch)); // Truyền dữ liệu vào màn hình chi tiết
+              Get.to(
+                () => ToyDetailScreen(watch: watch),
+              ); // Truyền dữ liệu vào màn hình chi tiết
             },
             child: WatchCard(watch: watch),
           );

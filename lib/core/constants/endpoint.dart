@@ -11,4 +11,7 @@ class Endpoints {
   static const String getOrder = '/api/v1/orders/list?page=1&limit=30';
   static const String getLike = '/api/v1/favorites/like';
   static const String postLike = '/api/v1/favorites/like';
+  static const String removeFromCart = '/api/v1/orders/delete-product';
+  static const String checkout = '/api/v1/orders/checkout';
+  static const String checkoutVNPay = '/api/v1/orders/checkout-vnpay';
 }

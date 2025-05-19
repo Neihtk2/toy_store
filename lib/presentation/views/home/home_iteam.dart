@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
-import 'package:toyland_mobile/data/models/watch_model.dart';
+
 import 'package:toyland_mobile/data/repositories/auth/auth_repository.dart';
-import 'package:toyland_mobile/data/repositories/watch/watch_responsitory.dart';
 import 'package:toyland_mobile/presentation/controllers/product_controller.dart';
-import 'package:toyland_mobile/presentation/views/home/drawer_menu.dart';
+
 import 'package:toyland_mobile/presentation/views/home/top_product.dart';
 import 'package:toyland_mobile/presentation/views/home/toy_item.dart';
 import 'package:toyland_mobile/presentation/views/home/toylist.dart';
@@ -17,7 +15,6 @@ class HomeItem extends StatelessWidget {
   HomeItem({super.key}) {
     Get.put(ProductController());
     Get.put(AuthRepository());
-    // Đưa UserController vào GetX khi HomeItem được tạo
   }
 
   final ProductController productController = Get.find();
@@ -25,7 +22,7 @@ class HomeItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      drawer: CustomDrawer(),
+      // drawer: CustomDrawer(),
       backgroundColor: const Color(0xFFF8F9FA),
       appBar: _buildAppBar(),
       body: SingleChildScrollView(

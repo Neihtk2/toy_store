@@ -18,11 +18,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
 
-  final List<Widget> _pages = [
-    HomeItem(),
-    OrderScreen(),
-   ProfileScreen(),
-  ];
+  final List<Widget> _pages = [HomeItem(), OrderScreen(), ProfileScreen()];
   @override
   void initState() {
     // TODO: implement initState
@@ -31,13 +27,11 @@ class _HomeScreenState extends State<HomeScreen> {
     Get.put(UserController());
     Get.put(CartRepository());
     Get.put(CartController());
-    
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      
       backgroundColor: Color(0xFFF8F9FA), // Để thấy rõ Bottom Bar
       body: _pages[_selectedIndex],
       bottomNavigationBar: CurvedNavigationBar(
@@ -57,13 +51,12 @@ class _HomeScreenState extends State<HomeScreen> {
                     : Colors.grey, // Trắng khi chọn, xám khi chưa chọn
           ),
 
-          
           Icon(
             Icons.local_shipping_outlined,
             size: 30,
             color: _selectedIndex == 1 ? Colors.white : Colors.grey,
           ),
-          
+
           Icon(
             Icons.person_outline,
             size: 30,

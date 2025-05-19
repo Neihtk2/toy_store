@@ -8,13 +8,14 @@ import 'package:toyland_mobile/data/models/user_models.dart';
 
 abstract class AuthRepositoryService {
   Future<UserModel?> login(String email, String password);
-  Future<UserModel?> register(
-    String username,
-    String email,
-    String password,
-    String gender,
-    String address,
-  );
+  Future<void> register({
+    required String username,
+    required String email,
+    required String password,
+    required String address,
+    required String gender,
+    // required String date,
+  });
   Future<void> logout();
 }
 
@@ -80,28 +81,40 @@ class AuthRepository implements AuthRepositoryService {
   }
 
   @override
-  Future<UserModel?> register(
-    String username,
-    String email,
-    String password,
-    String gender,
-    String address,
-  ) async {
+  Future<void> register({
+    required String username,
+    required String email,
+    required String password,
+    required String address,
+    required String gender,
+
+    // required String date,
+  }) async {
     try {
       final response = await _api.registerApp(
-        username,
-        email,
-        password,
-        gender,
-        address,
+        name: username,
+        email: email,
+        password: password,
+        address: address,
+        gender: gender,
+        // date: date,
       );
       if (response.statusCode == 200 || response.statusCode == 201) {
-        return UserModel.fromJson(response.data['data']);
+        Get.snackbar(
+          'Success',
+          'Registration successful',
+          snackPosition: SnackPosition.BOTTOM,
+        );
+        // return UserModel.fromJson(response.data['data']);
       } else {
-        return null;
+        Get.snackbar(
+          'Error',
+          'Registration failed: ${response.statusCode}',
+          snackPosition: SnackPosition.BOTTOM,
+        );
       }
     } catch (e) {
-      return null;
+      _handleError(e);
     }
   }
 

@@ -6,7 +6,7 @@ import 'package:toyland_mobile/data/models/cart_model.dart';
 import 'package:toyland_mobile/data/repositories/cart/cart_repository.dart';
 
 class CartController extends GetxController {
-  final CartRepository _repo = Get.find();
+  final CartRepository _repo = CartRepository();
   final RxBool isLoading = false.obs;
   final RxString error = ''.obs;
   var filteredCartItem = <CartItem>[].obs;
@@ -38,25 +38,30 @@ class CartController extends GetxController {
     }
   }
 
-  Future<void> addCart(String id, String amount) async {
+  Future<void> removeFromCart(int id) async {
     isLoading.value = true;
-    String token = GetStorage().read(MyConfig.ACCESS_TOKEN);
-
-    if (id.isEmpty || amount.isEmpty) {
+    try {
+      await _repo.removeFromCart(id);
+      await getCart();
+    } catch (e) {
+      error.value = "Lỗi khi xóa sản phẩm: $e";
       Get.snackbar(
         'Lỗi',
-        'Vui lòng nhập đầy đủ thông tin sản phẩm',
+        'Có lỗi xảy ra khi xóa sản phẩm',
         snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
       );
+    } finally {
       isLoading.value = false;
-      return;
     }
+  }
 
+  Future<void> addCart(int id, int amount) async {
+    isLoading.value = true;
     try {
       await _repo.postProducts(id, amount);
-
-      // Hiển thị thông báo thành công
-     
+      await getCart(); // Cập nhật giỏ hàng sau khi thêm sản phẩm
     } catch (e) {
       error.value = "Lỗi khi thêm vào giỏ hàng: $e";
       Get.snackbar(

@@ -26,7 +26,7 @@ class AuthController extends GetxController {
           print("ddd");
           print(user.accessToken);
           print("ddd");
-          Get.toNamed(RouterName.home);
+          Get.offAllNamed(RouterName.home);
         } else {
           Get.snackbar('Error', 'Login failed');
         }
@@ -38,30 +38,26 @@ class AuthController extends GetxController {
     }
   }
 
-  Future<void> register(
-    String name,
-    String email,
-    String password,
-    String render,
-    String address,
-  ) async {
+  Future<void> register({
+    required String name,
+    required String email,
+    required String password,
+    required String render,
+    required String address,
+    // required String date,
+  }) async {
     isLoading.value = true;
     try {
       if (email.isNotEmpty || password.isNotEmpty) {
         // final response = await _apiService.LoginApp(username, password);
-        final user = await _repo.register(
-          name,
-          email,
-          password,
-          render,
-          address,
+        await _repo.register(
+          username: name,
+          email: email,
+          password: password,
+          address: address,
+          gender: render,
+          // date: date,
         );
-        if (user != null) {
-          _saveTokens(user.accessToken, user.refreshToken);
-          Get.offAllNamed(RouterName.home);
-        } else {
-          Get.snackbar('Error', 'Login failed');
-        }
       }
     } catch (e) {
       _handleError(e);

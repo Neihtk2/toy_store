@@ -5,7 +5,7 @@ import 'package:toyland_mobile/data/models/watch_model.dart';
 import 'package:toyland_mobile/data/repositories/watch/watch_responsitory.dart';
 
 class ProductController extends GetxController {
-  final WatchResponsitory _repo = Get.find();
+  final WatchResponsitory _repo = WatchResponsitory();
   final RxBool isLoading = false.obs;
   final RxString error = ''.obs;
   final RxList<WatchModel> filteredProductItem = <WatchModel>[].obs;
@@ -35,11 +35,9 @@ class ProductController extends GetxController {
         //print("✅ Sản phẩm lấy được: ${fetchedCartData.length} items");
         filteredProductItem.assignAll(fetchedCartData);
       } else {
-        print("⚠️ Không có sản phẩm nào!");
         error.value = "Không có sản phẩm!";
       }
     } catch (e) {
-      print("❌ Lỗi khi tải sản phẩm: $e");
       error.value = "Lỗi khi tải giỏ hàng: $e";
     } finally {
       isLoading.value = false;

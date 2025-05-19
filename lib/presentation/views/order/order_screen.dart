@@ -8,7 +8,7 @@ import 'package:toyland_mobile/presentation/views/order/rating_screen.dart';
 
 class OrderScreen extends StatelessWidget {
   OrderScreen({Key? key}) : super(key: key);
-  final OrderRepository orderRepository = Get.put(OrderRepository());
+
   final OrderController orderController = Get.put(OrderController());
   @override
   Widget build(BuildContext context) {
@@ -81,7 +81,6 @@ class OrderScreen extends StatelessWidget {
           Column(
             children:
                 order.orderDetails.map((detail) {
-                  
                   return Padding(
                     padding: const EdgeInsets.only(bottom: 10.0),
                     child: Row(

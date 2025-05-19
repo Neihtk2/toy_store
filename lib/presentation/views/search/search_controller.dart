@@ -1,19 +1,20 @@
 import 'package:diacritic/diacritic.dart';
 import 'package:get/get.dart';
 import 'package:toyland_mobile/data/models/product_model.dart';
+import 'package:toyland_mobile/data/models/watch_model.dart';
 
 import 'package:toyland_mobile/presentation/controllers/toy_controller.dart';
 
 class SearchToysController extends GetxController {
   final ToysController repo = Get.find();
-  final RxList<Product> filteredDishes = <Product>[].obs;
+  final RxList<WatchModel> filteredDishes = <WatchModel>[].obs;
   final RxList<String> suggestions = <String>[].obs;
   final RxString searchQuery = ''.obs;
 
   @override
   void onInit() {
     super.onInit();
-    // Lúc init search screen thì lấy hết danh sách món
+
     filteredDishes.assignAll(repo.allProduct);
   }
 
@@ -29,7 +30,9 @@ class SearchToysController extends GetxController {
     final results =
         repo.allProduct.where((dish) {
           final name = removeDiacritics(dish.name!.toLowerCase());
-          final category = removeDiacritics((dish.category?.name)!.toLowerCase());
+          final category = removeDiacritics(
+            (dish.category?.name)!.toLowerCase(),
+          );
 
           return name.contains(normalizedQuery) ||
               category.contains(normalizedQuery);

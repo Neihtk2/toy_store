@@ -5,9 +5,10 @@ import 'package:toyland_mobile/core/constants/config.dart';
 import 'package:toyland_mobile/core/constants/endpoint.dart';
 import 'package:toyland_mobile/core/network/api_service.dart';
 import 'package:toyland_mobile/data/models/product_model.dart';
+import 'package:toyland_mobile/data/models/watch_model.dart';
 
 abstract class ToyReponsitory {
-  Future<List<Product>> getToys();
+  Future<List<WatchModel>> getToys();
 }
 
 class ToyReponsitoryImpl implements ToyReponsitory {
@@ -17,7 +18,7 @@ class ToyReponsitoryImpl implements ToyReponsitory {
   ToyReponsitoryImpl._internal();
   static ToyReponsitoryImpl get instance => _instance;
   @override
-  Future<List<Product>> getToys() async {
+  Future<List<WatchModel>> getToys() async {
     final token = box.read(MyConfig.ACCESS_TOKEN);
     try {
       final response = await api.dio.get(
@@ -33,11 +34,11 @@ class ToyReponsitoryImpl implements ToyReponsitory {
   }
 }
 
-List<Product> _handleResponse(Response response) {
+List<WatchModel> _handleResponse(Response response) {
   if (response.statusCode != 200 && response.statusCode != 201) return [];
   try {
     final List<dynamic> jsonList = response.data["data"]["products"];
-    return jsonList.map((json) => Product.fromJson(json)).toList();
+    return jsonList.map((json) => WatchModel.fromJson(json)).toList();
   } catch (e) {
     throw const FormatException('Invalid user data format');
   }
