@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:toyland_mobile/data/repositories/cart/cart_repository.dart';
 import 'package:toyland_mobile/presentation/controllers/cart_controller.dart';
+import 'package:toyland_mobile/presentation/controllers/like_controller.dart';
 import 'package:toyland_mobile/presentation/controllers/toy_controller.dart';
 import 'package:toyland_mobile/presentation/controllers/user_controller.dart';
 import 'package:toyland_mobile/presentation/views/home/home_iteam.dart';
@@ -18,11 +19,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
 
-  final List<Widget> _pages = [
-    HomeItem(),
-    OrderScreen(),
-   ProfileScreen(),
-  ];
+  final List<Widget> _pages = [HomeItem(), OrderScreen(), ProfileScreen()];
   @override
   void initState() {
     // TODO: implement initState
@@ -31,13 +28,14 @@ class _HomeScreenState extends State<HomeScreen> {
     Get.put(UserController());
     Get.put(CartRepository());
     Get.put(CartController());
-    
+    Get.put(LikeController());
+    final likeController = Get.find<LikeController>();
+    likeController.preloadFavoriteProductIds();
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      
       backgroundColor: Color(0xFFF8F9FA), // Để thấy rõ Bottom Bar
       body: _pages[_selectedIndex],
       bottomNavigationBar: CurvedNavigationBar(
@@ -57,13 +55,12 @@ class _HomeScreenState extends State<HomeScreen> {
                     : Colors.grey, // Trắng khi chọn, xám khi chưa chọn
           ),
 
-          
           Icon(
             Icons.local_shipping_outlined,
             size: 30,
             color: _selectedIndex == 1 ? Colors.white : Colors.grey,
           ),
-          
+
           Icon(
             Icons.person_outline,
             size: 30,

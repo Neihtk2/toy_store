@@ -5,7 +5,7 @@ import 'package:toyland_mobile/presentation/views/profile/edit_profile.dart';
 
 class ProfileScreen extends StatelessWidget {
   ProfileScreen({Key? key}) : super(key: key) {
-     Get.put(UserController()); // 🔥 Đăng ký tại đây (không tối ưu)
+    Get.put(UserController()); // 🔥 Đăng ký tại đây (không tối ưu)
   }
 
   @override
@@ -15,22 +15,22 @@ class ProfileScreen extends StatelessWidget {
     return Scaffold(
       backgroundColor: const Color(0xFFF8F9FA),
       appBar: AppBar(
-        automaticallyImplyLeading: false, 
+        automaticallyImplyLeading: false,
         backgroundColor: const Color(0xFFF8F9FA),
         elevation: 0,
         centerTitle: false,
         title: const Text(
           "Trang cá nhân",
-          style: TextStyle(
-            color: Colors.black,
-            fontWeight: FontWeight.bold,
-          ),
+          style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
         ),
         actions: [
           IconButton(
             icon: const Icon(Icons.edit, color: Colors.blue),
             onPressed: () {
-              Get.to(() => EditProfile());
+              final user = userController.user.value;
+              if (user != null) {
+                Get.to(() => EditProfile(user: user));
+              }
             },
           ),
         ],
@@ -51,7 +51,7 @@ class ProfileScreen extends StatelessWidget {
             ),
           );
         }
-// Debug API
+        // Debug API
 
         return SingleChildScrollView(
           padding: const EdgeInsets.all(20),
@@ -61,25 +61,12 @@ class ProfileScreen extends StatelessWidget {
               Center(
                 child: Stack(
                   children: [
-                    const CircleAvatar(
+                    CircleAvatar(
                       radius: 50,
-                      child: Icon(Icons.person, size: 40),
-                    ),
-                    Positioned(
-                      bottom: 0,
-                      right: 0,
-                      child: Container(
-                        decoration: const BoxDecoration(
-                          color: Colors.blue,
-                          shape: BoxShape.circle,
-                        ),
-                        padding: const EdgeInsets.all(5),
-                        child: const Icon(
-                          Icons.camera_alt,
-                          color: Colors.white,
-                          size: 18,
-                        ),
-                      ),
+                      backgroundImage: NetworkImage(user.avatar ?? ""),
+                      backgroundColor:
+                          Colors
+                              .transparent, // Tuỳ chọn: để tránh màu nền khi ảnh chưa load
                     ),
                   ],
                 ),
@@ -88,7 +75,9 @@ class ProfileScreen extends StatelessWidget {
 
               // Tên người dùng
               Text(
-                user.username?.isNotEmpty == true ? user.username! : "Chưa có tên",
+                user.username?.isNotEmpty == true
+                    ? user.username!
+                    : "Chưa có tên",
                 style: const TextStyle(
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
@@ -99,7 +88,13 @@ class ProfileScreen extends StatelessWidget {
 
               // Các trường thông tin người dùng
               _buildProfileField("Tên", user.username ?? "Chưa có tên"),
-              _buildProfileField("Địa chỉ email ", user.email ?? "Chưa có email"),
+              
+              _buildProfileField(
+                "Địa chỉ email ",
+                user.email ?? "Chưa có email",
+              ),
+              _buildProfileField("Số diện thoại", user.phoneNumber ?? ""),
+              _buildProfileField("Đia chỉ", user.address ?? ""),
             ],
           ),
         );
@@ -111,10 +106,7 @@ class ProfileScreen extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          label,
-          style: const TextStyle(fontSize: 14, color: Colors.grey),
-        ),
+        Text(label, style: const TextStyle(fontSize: 14, color: Colors.grey)),
         const SizedBox(height: 5),
         TextFormField(
           initialValue: value,

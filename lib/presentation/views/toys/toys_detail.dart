@@ -36,7 +36,7 @@ class _ToyDetailScreenState extends State<ToyDetailScreen> {
 
     // Sau đó mới đăng ký CartController
     cartController = Get.put(CartController());
-    likeController.fetchFavoriteByProductId(widget.watch.id);
+    likeController.preloadFavoriteProductIds();
   }
 
   void _updateQuantity(int newQuantity) {
@@ -65,8 +65,7 @@ class _ToyDetailScreenState extends State<ToyDetailScreen> {
                     const SizedBox(height: 20),
                     _buildProductInfo(),
                     const SizedBox(height: 20),
-                    _buildGallery(),
-                    const SizedBox(height: 20),
+                    
                     _buildQuantitySelector(quantity, _updateQuantity),
                   ],
                 ),
@@ -151,7 +150,7 @@ class _ToyDetailScreenState extends State<ToyDetailScreen> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             const Text(
-              "BEST SELLER",
+              "Bán chạy",
               style: TextStyle(
                 color: Colors.blue,
                 fontWeight: FontWeight.bold,
@@ -191,64 +190,22 @@ class _ToyDetailScreenState extends State<ToyDetailScreen> {
     );
   }
 
-  Widget _buildGallery() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
-          "Gallery",
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-            color: Colors.black,
-          ),
-        ),
-        const SizedBox(height: 10),
-        Row(
-          children:
-              widget.watch.images
-                  .map(
-                    (img) => Padding(
-                      padding: const EdgeInsets.only(right: 10),
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(10),
-                        child: Image.network(
-                          img.url,
-                          width: 80,
-                          height: 80,
-                          fit: BoxFit.cover,
-                        ),
-                      ),
-                    ),
-                  )
-                  .toList(),
-        ),
-      ],
-    );
-  }
+  
 
-  Widget _buildFavoriteButton(int productId) {
+Widget _buildFavoriteButton(int productId) {
   return Obx(() {
-    if (likeController.isLoading.value) {
-      return const SizedBox(
-        width: 24,
-        height: 24,
-        child: CircularProgressIndicator(strokeWidth: 2),
-      );
-    }
+    final isLiked = likeController.isProductLiked(productId);
 
     return IconButton(
       icon: Icon(
-        likeController.isLiked.value ? Icons.favorite : Icons.favorite_border,
+        isLiked ? Icons.favorite : Icons.favorite_border,
         color: Colors.red,
       ),
-      onPressed: () async {
-        await likeController.toggleLike(productId);
-        await likeController.fetchFavoriteByProductId(productId);
-      },
+      onPressed: () => likeController.toggleLike(productId),
     );
   });
 }
+
 
 
 
@@ -372,11 +329,7 @@ class _ToyDetailScreenState extends State<ToyDetailScreen> {
         widget.watch.id.toString(),
         quantity.toString(),
       );
-      Get.snackbar(
-        "Success",
-        "Thêm thành công!",
-        snackPosition: SnackPosition.BOTTOM,
-      );
+     
     } catch (e) {
       Get.snackbar(
         "Error",

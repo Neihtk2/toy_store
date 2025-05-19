@@ -1,11 +1,10 @@
-import 'dart:convert';
-
 class WatchModel {
   final int id;
   final String name;
   final String slug;
   final String? description;
   final String price;
+  final String sold;
   final String? salePrice;
   final String stockAmount;
   final DateTime createdAt;
@@ -21,6 +20,7 @@ class WatchModel {
     this.description,
     required this.price,
     this.salePrice,
+    required this.sold,
     required this.stockAmount,
     required this.createdAt,
     required this.updatedAt,
@@ -31,21 +31,22 @@ class WatchModel {
 
   factory WatchModel.fromJson(Map<String, dynamic> json) {
     return WatchModel(
-      id: json["id"] as int? ?? 0,
+      id: int.tryParse(json["id"].toString()) ?? 0,
       name: json["name"] ?? '',
       slug: json["slug"] ?? '',
-      description: json["description"], // Có thể null
-      price: json["price"] ?? '0',
-      salePrice: json["salePrice"], // Có thể null
-      stockAmount: json["stockAmount"] ?? '0',
+      description: json["description"],
+      price: json["price"]?.toString() ?? '0',
+      salePrice: json["salePrice"]?.toString(),
+      sold: json["sold"]?.toString() ?? '0',
+      stockAmount: json["stockAmount"]?.toString() ?? '0',
       createdAt: json["createdAt"] != null
           ? DateTime.tryParse(json["createdAt"]) ?? DateTime.now()
           : DateTime.now(),
       updatedAt: json["updatedAt"] != null
           ? DateTime.tryParse(json["updatedAt"]) ?? DateTime.now()
           : DateTime.now(),
-      branch: Branch.fromJson(json["branch"] ?? {}), // Nếu null thì truyền {}
-      category: Category.fromJson(json["category"] ?? {}), // Nếu null thì truyền {}
+      branch: Branch.fromJson(json["branch"] ?? {}),
+      category: Category.fromJson(json["category"] ?? {}),
       images: (json["images"] as List?)
               ?.map((x) => ProductImage.fromJson(x))
               .toList() ??
@@ -60,6 +61,7 @@ class WatchModel {
       "slug": slug,
       "description": description,
       "price": price,
+      "sold": sold,
       "salePrice": salePrice,
       "stockAmount": stockAmount,
       "createdAt": createdAt.toIso8601String(),
@@ -79,7 +81,7 @@ class Branch {
 
   factory Branch.fromJson(Map<String, dynamic> json) {
     return Branch(
-      id: json["id"] as int? ?? 0,
+      id: int.tryParse(json["id"].toString()) ?? 0,
       name: json["name"] ?? '',
     );
   }
@@ -98,7 +100,7 @@ class Category {
 
   factory Category.fromJson(Map<String, dynamic> json) {
     return Category(
-      id: json["id"] as int? ?? 0,
+      id: int.tryParse(json["id"].toString()) ?? 0,
       name: json["name"] ?? '',
     );
   }
@@ -117,7 +119,7 @@ class ProductImage {
 
   factory ProductImage.fromJson(Map<String, dynamic> json) {
     return ProductImage(
-      id: json["id"] as int? ?? 0,
+      id: int.tryParse(json["id"].toString()) ?? 0,
       url: json["url"] ?? '',
     );
   }

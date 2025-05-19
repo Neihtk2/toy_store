@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get/get_core/src/get_main.dart';
+import 'package:toyland_mobile/presentation/controllers/like_controller.dart';
+import 'package:toyland_mobile/presentation/views/home/filter_product.dart';
 
 class CustomDrawer extends StatelessWidget {
   @override
@@ -11,7 +15,6 @@ class CustomDrawer extends StatelessWidget {
           children: [
             // Phần Header (Ảnh đại diện + Tên)
             DrawerHeader(
-              
               decoration: const BoxDecoration(color: Color(0xFF1D2630)),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -28,10 +31,7 @@ class CustomDrawer extends StatelessWidget {
                   // Lời chào
                   const Text(
                     "Hey, 👋",
-                    style: TextStyle(
-                      color: Colors.white70,
-                      fontSize: 14,
-                    ),
+                    style: TextStyle(color: Colors.white70, fontSize: 14),
                   ),
 
                   // Tên người dùng
@@ -48,10 +48,31 @@ class CustomDrawer extends StatelessWidget {
             ),
 
             // Danh sách menu
-            _buildDrawerItem(Icons.person_outline, "Profile"),
+            GestureDetector(
+              onTap: () async {
+                final likeController = Get.find<LikeController>();
+
+                // Nếu chưa fetch thì gọi để chắc chắn dữ liệu có sẵn
+                if (likeController.likedProducts.isEmpty) {
+                  await likeController.fetchLikedProductsDetail();
+                }
+
+                Get.to(
+                  () => FilterProductScreen(
+                    products:
+                        likeController.likedProducts
+                            .map((e) => e.product)
+                            .toList(),
+                    title: "Các sản phẩm yêu thích",
+                  ),
+                );
+              },
+
+              child: _buildDrawerItem(Icons.favorite, "Đã thích"),
+            ),
             _buildDrawerItem(Icons.home_outlined, "Home Page"),
             _buildDrawerItem(Icons.shopping_bag_outlined, "My Cart"),
-           
+
             _buildDrawerItem(Icons.local_shipping_outlined, "Orders"),
 
             // Dòng kẻ ngăn cách
@@ -73,9 +94,6 @@ class CustomDrawer extends StatelessWidget {
         title,
         style: const TextStyle(color: Colors.white, fontSize: 16),
       ),
-      onTap: () {
-        // Xử lý sự kiện nhấn vào menu
-      },
     );
   }
 }

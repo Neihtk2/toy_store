@@ -70,7 +70,7 @@ class OrderScreen extends StatelessWidget {
                 ],
               ),
               Text(
-                order.status,
+                getVietnameseStatus(order.status),
                 style: const TextStyle(color: Colors.red, fontSize: 14),
               ),
             ],
@@ -81,7 +81,6 @@ class OrderScreen extends StatelessWidget {
           Column(
             children:
                 order.orderDetails.map((detail) {
-                  
                   return Padding(
                     padding: const EdgeInsets.only(bottom: 10.0),
                     child: Row(
@@ -181,9 +180,31 @@ class OrderScreen extends StatelessWidget {
               ),
               const SizedBox(width: 10),
               ElevatedButton(
-                onPressed: () {
-                  // TODO: Gọi API xác nhận đơn hàng
-                  Get.dialog(RatingDialog());
+                onPressed: () async {
+                  final rating = await Get.dialog(RatingDialog());
+
+                  if (rating != null && rating > 0) {
+                    final controller = Get.find<OrderController>();
+
+                    await controller.createRate(
+                      productId:
+                          order
+                              .orderDetails
+                              .first
+                              .productId, // đảm bảo bạn có productId ở đây
+                      rate: rating.toInt(),
+                      orderId: order.id,
+                    );
+
+                    if (controller.error.value.isEmpty) {
+                      Get.snackbar(
+                        'Thành công',
+                        'Bạn đã đánh giá ${rating.toInt()} sao cho sản phẩm!',
+                      );
+                    } else {
+                      Get.snackbar('Lỗi', controller.error.value);
+                    }
+                  }
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.red,
@@ -197,7 +218,7 @@ class OrderScreen extends StatelessWidget {
                   ),
                 ),
                 child: const Text(
-                  "Đang nhận hàng",
+                  "Đã nhận hàng",
                   style: TextStyle(
                     fontSize: 14,
                     color: Colors.white,
@@ -210,5 +231,20 @@ class OrderScreen extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  String getVietnameseStatus(String status) {
+    switch (status) {
+      case 'waiting_payment':
+        return 'Chờ thanh toán';
+      case 'waiting_confirm':
+        return 'Chờ xác nhận';
+      case 'success':
+        return 'Thành công';
+      case 'reject':
+        return 'Đã hủy';
+      default:
+        return 'Đang chờ xử lý';
+    }
   }
 }
