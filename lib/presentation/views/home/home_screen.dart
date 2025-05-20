@@ -4,6 +4,9 @@ import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:toyland_mobile/data/repositories/cart/cart_repository.dart';
 import 'package:toyland_mobile/presentation/controllers/cart_controller.dart';
+
+import 'package:toyland_mobile/presentation/controllers/like_controller.dart';
+
 import 'package:toyland_mobile/presentation/controllers/toy_controller.dart';
 import 'package:toyland_mobile/presentation/controllers/user_controller.dart';
 import 'package:toyland_mobile/presentation/views/home/home_iteam.dart';
@@ -27,6 +30,11 @@ class _HomeScreenState extends State<HomeScreen> {
     Get.put(UserController());
     Get.put(CartRepository());
     Get.put(CartController());
+
+    Get.put(LikeController());
+    final likeController = Get.find<LikeController>();
+    likeController.preloadFavoriteProductIds();
+
   }
 
   @override

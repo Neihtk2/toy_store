@@ -140,7 +140,7 @@ class LoginScreen extends GetView<AuthController> {
             horizontal: 20.w,
           ),
           fillColor: Colors.grey[100],
-          hintText: 'Password',
+          hintText: 'Mật khẩu',
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(30.r),
             borderSide: BorderSide.none,

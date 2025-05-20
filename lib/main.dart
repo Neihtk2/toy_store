@@ -11,7 +11,6 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await GetStorage.init();
   Get.lazyPut(() => ApiService());
-
   runApp(MyApp());
 }
 

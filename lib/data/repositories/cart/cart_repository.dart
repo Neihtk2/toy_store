@@ -27,6 +27,7 @@ class CartRepository {
     }
   }
 
+
   Future<void> removeFromCart(int id) async {
     String? token = GetStorage().read(MyConfig.ACCESS_TOKEN);
     if (token == null || token.isEmpty) {

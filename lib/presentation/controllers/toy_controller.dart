@@ -1,14 +1,24 @@
 import 'package:dio/dio.dart';
 import 'package:get/get.dart';
 import 'package:toyland_mobile/data/models/product_model.dart';
+<<<<<<< HEAD
 import 'package:toyland_mobile/data/models/watch_model.dart';
 import 'package:toyland_mobile/data/repositories/watch/toy_responsitory.dart';
 
+=======
+import 'package:toyland_mobile/data/repositories/watch/toy_responsitory.dart';
+
+
+>>>>>>> tandev
 class ToysController extends GetxController {
   final ToyReponsitoryImpl _repo = ToyReponsitoryImpl.instance;
   final RxBool isLoading = false.obs;
   final RxString error = ''.obs;
+<<<<<<< HEAD
   final RxList<WatchModel> allProduct = <WatchModel>[].obs;
+=======
+  final RxList<Product> allProduct = <Product>[].obs;
+>>>>>>> tandev
 
   @override
   void onInit() {
@@ -49,4 +59,8 @@ void _handleError(dynamic e) {
           ? e.response?.data['message'] ?? e.message
           : e.toString();
   // Get.snackbar('Error', message);
+<<<<<<< HEAD
 }
+=======
+}
+>>>>>>> tandev

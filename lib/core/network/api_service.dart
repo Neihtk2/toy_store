@@ -64,6 +64,8 @@ class ApiService extends Get.GetxService {
         },
       ),
     );
+
+
   }
 
   Future<Response> getMe(String token) async {

@@ -30,7 +30,10 @@ class ProfileScreen extends StatelessWidget {
           IconButton(
             icon: const Icon(Icons.edit, color: Colors.blue),
             onPressed: () {
-              Get.to(() => EditProfile());
+              final user = userController.user.value;
+              if (user != null) {
+                Get.to(() => EditProfile(user: user));
+              }
             },
           ),
         ],
@@ -51,103 +54,52 @@ class ProfileScreen extends StatelessWidget {
             ),
           );
         }
-
-        return LayoutBuilder(
-          builder: (context, constraints) {
-            return SingleChildScrollView(
-              child: ConstrainedBox(
-                constraints: BoxConstraints(minHeight: constraints.maxHeight),
-                child: IntrinsicHeight(
-                  child: Column(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.all(20),
-                        child: Column(
-                          children: [
-                            // Ảnh đại diện
-                            Center(
-                              child: Stack(
-                                children: [
-                                  const CircleAvatar(
-                                    radius: 50,
-                                    child: Icon(Icons.person, size: 40),
-                                  ),
-                                  Positioned(
-                                    bottom: 0,
-                                    right: 0,
-                                    child: Container(
-                                      decoration: const BoxDecoration(
-                                        color: Colors.blue,
-                                        shape: BoxShape.circle,
-                                      ),
-                                      padding: const EdgeInsets.all(5),
-                                      child: const Icon(
-                                        Icons.camera_alt,
-                                        color: Colors.white,
-                                        size: 18,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            const SizedBox(height: 10),
-                            // Tên người dùng
-                            Text(
-                              user.username?.isNotEmpty == true
-                                  ? user.username!
-                                  : "Chưa có tên",
-                              style: const TextStyle(
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black,
-                              ),
-                            ),
-                            const SizedBox(height: 20),
-                            // Các trường
-                            _buildProfileField(
-                              "Tên",
-                              user.username ?? "Chưa có tên",
-                            ),
-                            _buildProfileField(
-                              "Địa chỉ email",
-                              user.email ?? "Chưa có email",
-                            ),
-                          ],
-                        ),
-                      ),
-                      const Spacer(), // đẩy nút xuống
-                      Padding(
-                        padding: const EdgeInsets.all(20),
-                        child: ElevatedButton(
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.red,
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 50,
-                              vertical: 15,
-                            ),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            minimumSize: const Size(double.infinity, 50),
-                          ),
-                          onPressed: () {
-                            GetStorage().remove(MyConfig.USER_ID);
-                            GetStorage().remove(MyConfig.ACCESS_TOKEN);
-                            Get.offAllNamed(RouterName.login);
-                          },
-                          child: const Text(
-                            "Đăng xuất",
-                            style: TextStyle(color: Colors.white),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
+        // Debug API
+        return SingleChildScrollView(
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            children: [
+              // Ảnh đại diện
+              Center(
+                child: Stack(
+                  children: [
+                    CircleAvatar(
+                      radius: 50,
+                      backgroundImage: NetworkImage(user.avatar ?? ""),
+                      backgroundColor:
+                          Colors
+                              .transparent, // Tuỳ chọn: để tránh màu nền khi ảnh chưa load
+                    ),
+                  ],
                 ),
               ),
-            );
-          },
+              const SizedBox(height: 10),
+
+              // Tên người dùng
+              Text(
+                user.username?.isNotEmpty == true
+                    ? user.username!
+                    : "Chưa có tên",
+                style: const TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black,
+                ),
+              ),
+              const SizedBox(height: 20),
+
+              // Các trường thông tin người dùng
+              _buildProfileField("Tên", user.username ?? "Chưa có tên"),
+              
+              _buildProfileField(
+                "Địa chỉ email ",
+                user.email ?? "Chưa có email",
+              ),
+              _buildProfileField("Số diện thoại", user.phoneNumber ?? ""),
+              _buildProfileField("Đia chỉ", user.address ?? ""),
+            ],
+          ),
+
         );
       }),
     );

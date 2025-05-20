@@ -4,6 +4,9 @@ import 'package:get/get.dart';
 import 'package:toyland_mobile/data/repositories/auth/auth_repository.dart';
 import 'package:toyland_mobile/presentation/controllers/product_controller.dart';
 
+import 'package:toyland_mobile/presentation/views/home/drawer_menu.dart';
+import 'package:toyland_mobile/presentation/views/home/filter_product.dart';
+
 import 'package:toyland_mobile/presentation/views/home/top_product.dart';
 import 'package:toyland_mobile/presentation/views/home/toy_item.dart';
 import 'package:toyland_mobile/presentation/views/home/toylist.dart';
@@ -15,6 +18,9 @@ class HomeItem extends StatelessWidget {
   HomeItem({super.key}) {
     Get.put(ProductController());
     Get.put(AuthRepository());
+
+    // Đưa UserController vào GetX khi HomeItem được tạo
+
   }
 
   final ProductController productController = Get.find();
@@ -215,8 +221,20 @@ class HomeItem extends StatelessWidget {
               padding: const EdgeInsets.symmetric(horizontal: 8.0),
               child: GestureDetector(
                 onTap: () {
-                  // TODO: Handle tap on branch (e.g., filter products by branch)
+
+                  final filteredList =
+                      productController.allProducts
+                          .where((item) => item.branch?.name == branchName)
+                          .toList();
+
+                  Get.to(
+                    () => FilterProductScreen(
+                      products: filteredList,
+                      title: branchName ?? "Sản phẩm",
+                    ),
+                  );
                 },
+
                 child: Chip(
                   label: Text(branchName ?? ""),
                   backgroundColor: Colors.white,

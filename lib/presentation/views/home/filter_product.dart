@@ -1,27 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
 import 'package:toyland_mobile/data/models/watch_model.dart';
 import 'package:toyland_mobile/presentation/views/home/toy_item.dart';
 import 'package:toyland_mobile/presentation/views/toys/toys_detail.dart';
 
-class SearchResultsScreen extends StatelessWidget {
-  final String searchQuery;
-  final RxList<WatchModel> results;
-  const SearchResultsScreen({
-    required this.searchQuery,
-    required this.results,
+class FilterProductScreen extends StatelessWidget {
+  final List<WatchModel> products;
+  final String title;
+
+  const FilterProductScreen({
     super.key,
+    required this.products,
+    required this.title,
   });
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Kết quả: "$searchQuery"')),
-      body: Obx(() {
-        return results.isEmpty
-            ? const Center(child: Text("Không tìm thấy sản phẩm nào."))
-            : GridView.builder(
+      backgroundColor: const Color(0xFFF8F9FA),
+      appBar: AppBar(
+        title: Text(title),
+        backgroundColor: const Color(0xFFF8F9FA),
+      ),
+      body: products.isEmpty
+          ? const Center(child: Text("Không có sản phẩm nào."))
+          : GridView.builder(
               padding: const EdgeInsets.all(10),
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: 2,
@@ -29,9 +32,9 @@ class SearchResultsScreen extends StatelessWidget {
                 crossAxisSpacing: 9,
                 mainAxisSpacing: 8,
               ),
-              itemCount: results.length,
+              itemCount: products.length,
               itemBuilder: (context, index) {
-                final watch = results[index];
+                final watch = products[index];
                 return GestureDetector(
                   onTap: () {
                     Get.to(() => ToyDetailScreen(watch: watch));
@@ -39,8 +42,11 @@ class SearchResultsScreen extends StatelessWidget {
                   child: WatchCard(watch: watch),
                 );
               },
-            );
-      }),
+            ),
     );
   }
 }
+
+
+  
+  
