@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-
 import 'package:toyland_mobile/data/models/watch_model.dart';
 import 'package:toyland_mobile/presentation/views/home/toy_item.dart';
 import 'package:toyland_mobile/presentation/views/toys/toys_detail.dart';
@@ -8,6 +7,7 @@ import 'package:toyland_mobile/presentation/views/toys/toys_detail.dart';
 class SearchResultsScreen extends StatelessWidget {
   final String searchQuery;
   final RxList<WatchModel> results;
+
   const SearchResultsScreen({
     required this.searchQuery,
     required this.results,

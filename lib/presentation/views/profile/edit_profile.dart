@@ -1,15 +1,10 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
-<<<<<<< HEAD
-import 'package:get/get.dart';
-import 'package:toyland_mobile/presentation/views/order/rating_screen.dart';
-=======
 import 'package:get/get.dart' as getx;
 import 'package:image_picker/image_picker.dart';
 import 'package:toyland_mobile/data/models/me_models.dart';
 import 'package:toyland_mobile/presentation/controllers/user_controller.dart';
->>>>>>> tandev
+
 
 class EditProfile extends StatefulWidget {
   final MeModel user;
@@ -97,17 +92,8 @@ class _EditProfileState extends State<EditProfile> {
             fontWeight: FontWeight.bold,
           ),
         ),
-<<<<<<< HEAD
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.edit, color: Colors.blue),
-            onPressed: () {
-              Get.dialog(RatingDialog());
-            },
-          ),
-        ],
-=======
->>>>>>> tandev
+
+
       ),
       body: getx.Obx(() {
         return _userController.isLoading.value
