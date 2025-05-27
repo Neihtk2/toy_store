@@ -26,9 +26,13 @@ class HomeItem extends StatelessWidget {
   final ProductController productController = Get.find();
 
   @override
+/*************  ✨ Windsurf Command ⭐  *************/
+  /// Returns a Scaffold with a CustomDrawer, a search bar, a horizontal list of
+
+/*******  b5d77c08-24af-409a-b6dd-e32156c01224  *******/
   Widget build(BuildContext context) {
     return Scaffold(
-      // drawer: CustomDrawer(),
+      drawer: CustomDrawer(),
       backgroundColor: const Color(0xFFF8F9FA),
       appBar: _buildAppBar(),
       body: SingleChildScrollView(

@@ -132,7 +132,7 @@ class OrderDetail {
   final int productId;
   final int unitPrice;
   final String productName;
-  final bool isRating;
+   bool isRating;
   final ProductModel? product;
 
   OrderDetail({

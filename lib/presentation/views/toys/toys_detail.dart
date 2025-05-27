@@ -59,7 +59,7 @@ class _ToyDetailScreenState extends State<ToyDetailScreen> {
                     _buildImageSlider(),
                     const SizedBox(height: 20),
                     _buildProductInfo(),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 10),
                     _buildQuantitySelector(quantity, _updateQuantity),
                   ],
                 ),
@@ -165,18 +165,52 @@ class _ToyDetailScreenState extends State<ToyDetailScreen> {
         ),
         const SizedBox(height: 10),
         Text(
-          NumberFormat("#,###.###", "en_US")
-              .format(double.parse(widget.watch.price)),
+          "${NumberFormat("#,###.###", "en_US").format(double.parse(widget.watch.price))} vnđ",
           style: const TextStyle(
             fontSize: 22,
             fontWeight: FontWeight.bold,
             color: Colors.black,
           ),
         ),
+
         const SizedBox(height: 10),
         Text(
           widget.watch.description ?? "",
           style: const TextStyle(fontSize: 16, color: Colors.grey),
+        ),
+        const SizedBox(height: 10),
+        Row(
+          children: [
+            const Text(
+              "Số lượng trong kho: ",
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
+              ),
+            ),
+            Text(
+              widget.watch.stockAmount ?? "",
+              style: const TextStyle(fontSize: 18, color: Colors.black),
+            ),
+          ],
+        ),
+        const SizedBox(height: 10),
+        Row(
+          children: [
+             const Text(
+              "Hãng: ",
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Colors.black,
+              ),
+            ),
+            Text(
+               widget.watch.branch.name ?? "",
+              style: const TextStyle(fontSize: 18, color: Colors.black),
+            ),
+          ],
         ),
       ],
     );
@@ -282,19 +316,20 @@ class _ToyDetailScreenState extends State<ToyDetailScreen> {
               backgroundColor: Colors.blue,
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
             ),
-            child: isLoading
-                ? const SizedBox(
-                    width: 24,
-                    height: 24,
-                    child: CircularProgressIndicator(
-                      color: Colors.white,
-                      strokeWidth: 2,
+            child:
+                isLoading
+                    ? const SizedBox(
+                      width: 24,
+                      height: 24,
+                      child: CircularProgressIndicator(
+                        color: Colors.white,
+                        strokeWidth: 2,
+                      ),
+                    )
+                    : const Text(
+                      "Thêm vào giỏ",
+                      style: TextStyle(fontSize: 16, color: Colors.white),
                     ),
-                  )
-                : const Text(
-                    "Thêm vào giỏ",
-                    style: TextStyle(fontSize: 16, color: Colors.white),
-                  ),
           ),
         ],
       ),
@@ -304,10 +339,7 @@ class _ToyDetailScreenState extends State<ToyDetailScreen> {
   Future<void> _addToCart() async {
     setState(() => isLoading = true);
     try {
-      await cartRepository.postProducts(
-        widget.watch.id,
-        quantity,
-      );
+      await cartRepository.postProducts(widget.watch.id, quantity);
     } catch (e) {
       Get.snackbar(
         "Error",

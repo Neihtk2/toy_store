@@ -111,4 +111,3 @@ class LikeController extends GetxController {
     return likedProductIds.contains(productId);
   }
 }
-

@@ -85,5 +85,46 @@ Future<void> createRate({
     isLoading.value = false;
   }
 }
+Future<void> updateOrder({
+  required String status,
+  required int orderId, // ví dụ từ 1 đến 5
+}) async {
+  isLoading.value = true;
+  error.value = '';
+
+  final token = box.read(MyConfig.ACCESS_TOKEN);
+  if (token == null || token.isEmpty) {
+    error.value = 'Bạn chưa đăng nhập!';
+    isLoading.value = false;
+    return;
+  }
+  try {
+    final response = await _dio.put(
+      'http://103.155.161.56:3100/api/v1/orders/$orderId/change-status',
+      data: {
+        "status": status   
+      },
+      options: Options(
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+        },
+      ),
+    );
+
+    if (response.statusCode == 200 || response.statusCode == 201) {
+      print("✅ Đánh giá thành công");
+      // Có thể gọi lại hàm fetch để cập nhật giao diện nếu cần
+    } else {
+      error.value = 'Đánh giá thất bại';
+      print("❌ Response: ${response.data}");
+    }
+  } catch (e) {
+    error.value = 'Lỗi khi gửi đánh giá: $e';
+    print("❌ Lỗi đánh giá sản phẩm: $e");
+  } finally {
+    isLoading.value = false;
+  }
+}
 
 }

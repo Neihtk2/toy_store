@@ -118,13 +118,127 @@ class OrderScreen extends StatelessWidget {
                                 ),
                               ),
                               const SizedBox(height: 5),
-                              Text(
-                                "\đ${NumberFormat("#,###.##", "en_US").format(detail.unitPrice)}",
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.red,
-                                ),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Text(
+                                    "\đ${NumberFormat("#,###.##", "en_US").format(detail.unitPrice)}",
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.red,
+                                    ),
+                                  ),
+                                  if (detail.isRating == false)
+                                    Builder(
+                                      builder: (context) {
+                                        bool isLoading = false;
+
+                                        return StatefulBuilder(
+                                          builder: (context, setState) {
+                                            return ElevatedButton(
+                                              onPressed:
+                                                  isLoading
+                                                      ? null
+                                                      : () async {
+                                                        setState(
+                                                          () =>
+                                                              isLoading = true,
+                                                        );
+
+                                                        final rating =
+                                                            await Get.dialog(
+                                                              RatingDialog(),
+                                                            );
+
+                                                        if (rating != null &&
+                                                            rating > 0) {
+                                                          final controller =
+                                                              Get.find<
+                                                                OrderController
+                                                              >();
+
+                                                          await controller
+                                                              .createRate(
+                                                                productId:
+                                                                    detail
+                                                                        .productId,
+                                                                rate:
+                                                                    rating
+                                                                        .toInt(),
+                                                                orderId:
+                                                                    order.id,
+                                                              );
+
+                                                          if (controller
+                                                              .error
+                                                              .value
+                                                              .isEmpty) {
+                                                            detail.isRating =
+                                                                true;
+                                                            orderController
+                                                                .orders
+                                                                .refresh();
+
+                                                            Get.snackbar(
+                                                              'Thành công',
+                                                              'Bạn đã đánh giá ${rating.toInt()} sao cho sản phẩm!',
+                                                            );
+                                                          } else {
+                                                            Get.snackbar(
+                                                              'Lỗi',
+                                                              controller
+                                                                  .error
+                                                                  .value,
+                                                            );
+                                                          }
+                                                        }
+
+                                                        setState(
+                                                          () =>
+                                                              isLoading = false,
+                                                        );
+                                                      },
+                                              style: ElevatedButton.styleFrom(
+                                                backgroundColor: Colors.red,
+                                                padding:
+                                                    const EdgeInsets.symmetric(
+                                                      horizontal: 15,
+                                                      vertical: 10,
+                                                    ),
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(8),
+                                                ),
+                                              ),
+                                              child:
+                                                  isLoading
+                                                      ? const SizedBox(
+                                                        width: 20,
+                                                        height: 20,
+                                                        child:
+                                                            CircularProgressIndicator(
+                                                              color:
+                                                                  Colors.white,
+                                                              strokeWidth: 2,
+                                                            ),
+                                                      )
+                                                      : const Text(
+                                                        "Đánh giá",
+                                                        style: TextStyle(
+                                                          fontSize: 14,
+                                                          color: Colors.white,
+                                                          fontWeight:
+                                                              FontWeight.bold,
+                                                        ),
+                                                      ),
+                                            );
+                                          },
+                                        );
+                                      },
+                                    ),
+                                ],
                               ),
                             ],
                           ),
@@ -134,9 +248,7 @@ class OrderScreen extends StatelessWidget {
                   );
                 }).toList(),
           ),
-
-          const Divider(thickness: 1, height: 30),
-
+          const Divider(thickness: 1, height: 20),
           // Tổng tiền
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -167,68 +279,114 @@ class OrderScreen extends StatelessWidget {
           const Divider(thickness: 1, height: 30),
 
           // Lưu ý + Nút xác nhận
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const Expanded(
-                child: Text(
-                  'Vui lòng chỉ nhấp vào "Đã nhận đơn hàng" khi đơn hàng đã được giao cho bạn và không có vấn đề gì với sản phẩm.',
-                  style: TextStyle(fontSize: 12, color: Colors.grey),
-                  maxLines: 3,
-                  overflow: TextOverflow.ellipsis,
-                ),
-              ),
-              const SizedBox(width: 10),
-              ElevatedButton(
-                onPressed: () async {
-                  final rating = await Get.dialog(RatingDialog());
 
-                  if (rating != null && rating > 0) {
-                    final controller = Get.find<OrderController>();
+          // Phần nút xác nhận và hủy đơn
+          if (order.status == 'waiting_confirm')
+            Builder(
+              builder: (context) {
+                bool isLoadingReject = false;
+                bool isLoadingConfirm = false;
 
-                    await controller.createRate(
-                      productId:
-                          order
-                              .orderDetails
-                              .first
-                              .productId, // đảm bảo bạn có productId ở đây
-                      rate: rating.toInt(),
-                      orderId: order.id,
+                return StatefulBuilder(
+                  builder: (context, setState) {
+                    return Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        ElevatedButton(
+                          onPressed:
+                              isLoadingReject
+                                  ? null
+                                  : () async {
+                                    setState(() => isLoadingReject = true);
+
+                                    await orderController.updateOrder(
+                                      orderId: order.id,
+                                      status: 'reject',
+                                    );
+                                    await orderController.getOrder();
+
+                                    setState(() => isLoadingReject = false);
+                                  },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.red,
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 15,
+                              vertical: 10,
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                          child:
+                              isLoadingReject
+                                  ? const SizedBox(
+                                    width: 20,
+                                    height: 20,
+                                    child: CircularProgressIndicator(
+                                      color: Colors.white,
+                                      strokeWidth: 2,
+                                    ),
+                                  )
+                                  : const Text(
+                                    "Hủy",
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                        ),
+                        const SizedBox(width: 10),
+                        ElevatedButton(
+                          onPressed:
+                              isLoadingConfirm
+                                  ? null
+                                  : () async {
+                                    setState(() => isLoadingConfirm = true);
+
+                                    await orderController.updateOrder(
+                                      orderId: order.id,
+                                      status: 'success',
+                                    );
+                                    await orderController.getOrder();
+
+                                    setState(() => isLoadingConfirm = false);
+                                  },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.deepOrange,
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 15,
+                              vertical: 10,
+                            ),
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                          child:
+                              isLoadingConfirm
+                                  ? const SizedBox(
+                                    width: 20,
+                                    height: 20,
+                                    child: CircularProgressIndicator(
+                                      color: Colors.white,
+                                      strokeWidth: 2,
+                                    ),
+                                  )
+                                  : const Text(
+                                    "Đã nhận hàng",
+                                    style: TextStyle(
+                                      fontSize: 14,
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                        ),
+                      ],
                     );
-
-                    if (controller.error.value.isEmpty) {
-                      Get.snackbar(
-                        'Thành công',
-                        'Bạn đã đánh giá ${rating.toInt()} sao cho sản phẩm!',
-                      );
-                    } else {
-                      Get.snackbar('Lỗi', controller.error.value);
-                    }
-                  }
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.red,
-                  disabledBackgroundColor: Colors.red.shade200,
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 15,
-                    vertical: 10,
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
-                child: const Text(
-                  "Đã nhận hàng",
-
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-            ],
-          ),
+                  },
+                );
+              },
+            ),
         ],
       ),
     );

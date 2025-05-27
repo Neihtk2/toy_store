@@ -1,6 +1,7 @@
 
 
 import 'dart:io';
+import 'package:get/get_core/src/get_main.dart';
 import 'package:http_parser/http_parser.dart';
 import 'package:path/path.dart' as path;
 import 'package:dio/dio.dart';
@@ -10,6 +11,8 @@ import 'package:toyland_mobile/core/constants/config.dart';
 import 'package:toyland_mobile/core/constants/endpoint.dart';
 import 'package:toyland_mobile/data/models/me_models.dart';
 import 'package:toyland_mobile/data/repositories/auth/auth_repository.dart';
+import 'package:toyland_mobile/presentation/controllers/auth_controller.dart';
+import 'package:toyland_mobile/presentation/views/login/login_screen.dart';
 
 class UserController extends getx.GetxController {
   final AuthRepository _repo = AuthRepository();
@@ -55,6 +58,19 @@ class UserController extends getx.GetxController {
       isLoading.value = false;
     }
   }
+void signOut() {
+  // Xoá thông tin người dùng trong controller
+  user.value = null;
+  error.value = "";
+  isLoading.value = false;
+  Get.put(AuthController());
+  // Xoá token đã lưu bằng GetStorage
+  box.remove(MyConfig.ACCESS_TOKEN);
+  box.remove(MyConfig.REFRESH_TOKEN);
+
+  // Điều hướng về màn hình đăng nhập và xoá toàn bộ lịch sử điều hướng
+  Get.offAll(() => LoginScreen());
+}
 
 
   /// Cập nhật thông tin người dùng
